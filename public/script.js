@@ -19,16 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.forEach(item => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${item.id || '-'}</td>
-                        <td>${item.name || item.Nombre || '-'}</td>
-                        <td>${item.quantity || item.Cantidad || '-'}</td>
-                        <td>${item.price || item.Precio || '-'}</td>
+                        <td>${item.SKU || item.id || '-'}</td>
+                        <td>${item.Nombre_Producto || item.name || '-'}</td>
+                        <td>${item.Stock_Actual || item.quantity || '-'}</td>
+                        <td>${item.Precio_Venta || item.price || '-'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
+            } else if (data.error) {
+                console.error('Server error:', data.error);
+                alert('Error del servidor: ' + data.error);
             } else {
                 console.error('Data format incorrect:', data);
-                alert('Error en el formato de datos recibido.');
+                alert('Error en el formato de datos recibido: ' + JSON.stringify(data));
             }
         } catch (error) {
             console.error('Error fetching data:', error);

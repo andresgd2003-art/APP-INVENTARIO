@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario Google Sheets</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <h1>Inventario</h1>
-        
+
         <div class="actions">
             <button id="refreshBtn">Actualizar Datos</button>
             <button id="addBtn">Agregar Item</button>
         </div>
 
         <div id="loading" class="hidden">Cargando datos...</div>
-        
+
         <table id="inventoryTable">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>SKU</th>
                     <th>Nombre</th>
                     <th>Cantidad</th>
                     <th>Precio</th>
@@ -36,15 +38,15 @@
                 <span class="close">&times;</span>
                 <h2>Agregar Nuevo Item</h2>
                 <form id="addItemForm">
-                    <label for="name">Nombre:</label>
-                    <input type="text" id="name" name="name" required>
-                    
-                    <label for="quantity">Cantidad:</label>
-                    <input type="number" id="quantity" name="quantity" required>
-                    
-                    <label for="price">Precio:</label>
-                    <input type="number" id="price" name="price" required>
-                    
+                    <label for="Nombre_Producto">Nombre:</label>
+                    <input type="text" id="Nombre_Producto" name="Nombre_Producto" required>
+
+                    <label for="Stock_Actual">Cantidad:</label>
+                    <input type="number" id="Stock_Actual" name="Stock_Actual" required>
+
+                    <label for="Precio_Venta">Precio:</label>
+                    <input type="number" id="Precio_Venta" name="Precio_Venta" required>
+
                     <button type="submit">Guardar</button>
                 </form>
             </div>
@@ -52,4 +54,5 @@
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>

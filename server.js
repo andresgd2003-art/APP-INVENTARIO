@@ -43,10 +43,16 @@ app.get('/api/data', async (req, res) => {
             ]);
         }
         const response = await axios.get(n8nUrl);
+        console.log('Data received from n8n:', response.data);
         res.json(response.data);
     } catch (error) {
         console.error('Error fetching data from n8n:', error.message);
-        res.status(500).json({ error: 'Failed to fetch data' });
+        console.log('Falling back to mock data due to error.');
+        res.json([
+            { row_number: 1, SKU: 'MOCK-001', Nombre_Producto: 'Item 1 (Mock)', Stock_Actual: 10, Precio_Venta: 100 },
+            { row_number: 2, SKU: 'MOCK-002', Nombre_Producto: 'Item 2 (Mock)', Stock_Actual: 5, Precio_Venta: 200 },
+            { row_number: 3, SKU: 'ERROR', Nombre_Producto: `N8N Error: ${error.message}`, Stock_Actual: 0, Precio_Venta: 0 }
+        ]);
     }
 });
 
