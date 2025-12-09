@@ -133,6 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(addItemForm);
         const data = Object.fromEntries(formData.entries());
 
+        // Remove row_number from the payload sent to n8n
+        // We match by SKU for updates, and we don't want to overwrite row_number in Sheets
+        delete data.row_number;
+
         try {
             const response = await fetch('/api/data', {
                 method: 'POST',

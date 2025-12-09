@@ -1,0 +1,376 @@
+{
+    "name": "Inventario Google Sheets CRUD",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "webhook",
+                "options": {}
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                460,
+                300
+            ],
+            "webhookId": "23e13c77-6a37-49b4-b8c8-6e834576d331"
+        },
+        {
+            "parameters": {
+                "dataType": "string",
+                "value1": "={{$json.method}}",
+                "rules": {
+                    "rules": [
+                        {
+                            "value2": "GET"
+                        },
+                        {
+                            "value2": "POST"
+                        }
+                    ]
+                }
+            },
+            "name": "Switch Method",
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 1,
+            "position": [
+                680,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "authentication": "oAuth2",
+                "documentId": {
+                    "__rl": true,
+                    "value": "INVENTARIO",
+                    "mode": "list",
+                    "cachedResultName": "INVENTARIO"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "inventario",
+                    "mode": "list",
+                    "cachedResultName": "inventario"
+                },
+                "options": {}
+            },
+            "name": "Get Rows",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 3,
+            "position": [
+                900,
+                100
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "YOUR_CREDENTIAL_ID",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "dataType": "string",
+                "value1": "={{$json.body.action}}",
+                "rules": {
+                    "rules": [
+                        {
+                            "value2": "add"
+                        },
+                        {
+                            "value2": "update"
+                        }
+                    ]
+                }
+            },
+            "name": "Switch Action",
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 1,
+            "position": [
+                900,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "authentication": "oAuth2",
+                "documentId": {
+                    "__rl": true,
+                    "value": "INVENTARIO",
+                    "mode": "list",
+                    "cachedResultName": "INVENTARIO"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "inventario",
+                    "mode": "list",
+                    "cachedResultName": "inventario"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "SKU": "={{$json.body.SKU}}",
+                        "Nombre_Producto": "={{$json.body.Nombre_Producto}}",
+                        "Stock_Actual": "={{$json.body.Stock_Actual}}",
+                        "Precio_Venta": "={{$json.body.Precio_Venta}}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "SKU",
+                            "displayName": "SKU",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Nombre_Producto",
+                            "displayName": "Nombre_Producto",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Stock_Actual",
+                            "displayName": "Stock_Actual",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Precio_Venta",
+                            "displayName": "Precio_Venta",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Add Row",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 3,
+            "position": [
+                1120,
+                400
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "YOUR_CREDENTIAL_ID",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "authentication": "oAuth2",
+                "documentId": {
+                    "__rl": true,
+                    "value": "INVENTARIO",
+                    "mode": "list",
+                    "cachedResultName": "INVENTARIO"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "inventario",
+                    "mode": "list",
+                    "cachedResultName": "inventario"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "SKU": "={{$json.body.SKU}}",
+                        "Nombre_Producto": "={{$json.body.Nombre_Producto}}",
+                        "Stock_Actual": "={{$json.body.Stock_Actual}}",
+                        "Precio_Venta": "={{$json.body.Precio_Venta}}"
+                    },
+                    "matchingColumns": [
+                        "row_number"
+                    ],
+                    "schema": [
+                        {
+                            "id": "SKU",
+                            "displayName": "SKU",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Nombre_Producto",
+                            "displayName": "Nombre_Producto",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Stock_Actual",
+                            "displayName": "Stock_Actual",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Precio_Venta",
+                            "displayName": "Precio_Venta",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "row_number",
+                            "displayName": "row_number",
+                            "required": false,
+                            "defaultMatch": true,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Update Row",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 3,
+            "position": [
+                1120,
+                600
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "YOUR_CREDENTIAL_ID",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "name": "Respond Data",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                1120,
+                100
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "{\n  \"success\": true,\n  \"message\": \"Operation completed\"\n}",
+                "options": {}
+            },
+            "name": "Respond Success",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                1340,
+                500
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Switch Method",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Switch Method": {
+            "main": [
+                [
+                    {
+                        "node": "Get Rows",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Switch Action",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Rows": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Data",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Switch Action": {
+            "main": [
+                [
+                    {
+                        "node": "Add Row",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Update Row",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Add Row": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Success",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Row": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Success",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
