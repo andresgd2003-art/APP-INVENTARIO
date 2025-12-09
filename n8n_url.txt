@@ -1,1 +1,1 @@
-https://n8n-n8n.x09761.easypanel.host/webhook-test/23e13c77-6a37-49b4-b8c8-6e834576d331
+https://n8n-n8n.x09761.easypanel.host/webhook/23e13c77-6a37-49b4-b8c8-6e834576d331
