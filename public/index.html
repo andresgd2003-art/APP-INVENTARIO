@@ -13,6 +13,7 @@
         <h1>Inventario</h1>
 
         <div class="actions">
+            <input type="text" id="searchInput" placeholder="Buscar por nombre o SKU...">
             <button id="refreshBtn">Actualizar Datos</button>
             <button id="addBtn">Agregar Item</button>
         </div>
@@ -26,6 +27,7 @@
                     <th>Nombre</th>
                     <th>Cantidad</th>
                     <th>Precio</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,8 +38,14 @@
         <div id="addItemModal" class="modal hidden">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2>Agregar Nuevo Item</h2>
+                <h2 id="modalTitle">Agregar Nuevo Item</h2>
                 <form id="addItemForm">
+                    <input type="hidden" id="row_number" name="row_number">
+                    <input type="hidden" id="action" name="action" value="add">
+
+                    <label for="SKU">SKU:</label>
+                    <input type="text" id="SKU" name="SKU" required>
+
                     <label for="Nombre_Producto">Nombre:</label>
                     <input type="text" id="Nombre_Producto" name="Nombre_Producto" required>
 

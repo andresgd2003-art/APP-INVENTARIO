@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.querySelector('.close');
     const addItemForm = document.getElementById('addItemForm');
     const loadingDiv = document.getElementById('loading');
+    const searchInput = document.getElementById('searchInput');
+    const modalTitle = document.getElementById('modalTitle');
+    const rowNumberInput = document.getElementById('row_number');
+    const actionInput = document.getElementById('action');
+
+    let inventoryData = [];
 
     // Fetch data function
     async function fetchData() {
@@ -16,16 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (Array.isArray(data)) {
-                data.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.SKU || item.id || '-'}</td>
-                        <td>${item.Nombre_Producto || item.name || '-'}</td>
-                        <td>${item.Stock_Actual || item.quantity || '-'}</td>
-                        <td>${item.Precio_Venta || item.price || '-'}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
+                inventoryData = data;
+                renderTable(inventoryData);
             } else if (data.error) {
                 console.error('Server error:', data.error);
                 alert('Error del servidor: ' + data.error);
@@ -41,16 +39,80 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Render table function
+    function renderTable(data) {
+        tableBody.innerHTML = '';
+        data.forEach(item => {
+            const row = document.createElement('tr');
+
+            const sku = item.SKU || item.id || '-';
+            const name = item.Nombre_Producto || item.name || '-';
+            const quantity = item.Stock_Actual || item.quantity || '-';
+            const price = item.Precio_Venta || item.price || '-';
+
+            row.innerHTML = `
+                <td>${sku}</td>
+                <td>${name}</td>
+                <td>${quantity}</td>
+                <td>${price}</td>
+                <td>
+                    <button class="edit-btn" data-row='${JSON.stringify(item)}'>Editar</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // Add event listeners to edit buttons
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const item = JSON.parse(e.target.getAttribute('data-row'));
+                editItem(item);
+            });
+        });
+    }
+
+    // Filter data function
+    function filterData() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredData = inventoryData.filter(item => {
+            const sku = (item.SKU || item.id || '').toString().toLowerCase();
+            const name = (item.Nombre_Producto || item.name || '').toString().toLowerCase();
+            return sku.includes(searchTerm) || name.includes(searchTerm);
+        });
+        renderTable(filteredData);
+    }
+
+    // Edit item function
+    function editItem(item) {
+        modalTitle.textContent = 'Editar Item';
+        actionInput.value = 'update';
+        rowNumberInput.value = item.row_number || '';
+
+        document.getElementById('SKU').value = item.SKU || '';
+        document.getElementById('Nombre_Producto').value = item.Nombre_Producto || '';
+        document.getElementById('Stock_Actual').value = item.Stock_Actual || '';
+        document.getElementById('Precio_Venta').value = item.Precio_Venta || '';
+
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+
     // Initial load
     fetchData();
 
-    // Refresh button
+    // Event Listeners
     refreshBtn.addEventListener('click', fetchData);
+    searchInput.addEventListener('input', filterData);
 
     // Modal controls
     addBtn.addEventListener('click', () => {
+        modalTitle.textContent = 'Agregar Nuevo Item';
+        actionInput.value = 'add';
+        rowNumberInput.value = '';
+        addItemForm.reset();
+
         modal.classList.remove('hidden');
-        modal.style.display = 'flex'; // Ensure flex display for centering
+        modal.style.display = 'flex';
     });
 
     closeBtn.addEventListener('click', () => {
@@ -88,11 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.style.display = 'none';
             addItemForm.reset();
             fetchData();
-            alert('Item agregado correctamente (o enviado a n8n).');
+            alert('Operación realizada correctamente.');
 
         } catch (error) {
-            console.error('Error adding item:', error);
-            alert('Error al agregar el item.');
+            console.error('Error submitting form:', error);
+            alert('Error al guardar el item.');
         }
     });
 });
