@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Google Sheets</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Inventario</h1>
+        
+        <div class="actions">
+            <button id="refreshBtn">Actualizar Datos</button>
+            <button id="addBtn">Agregar Item</button>
+        </div>
+
+        <div id="loading" class="hidden">Cargando datos...</div>
+        
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+
+        <div id="addItemModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Agregar Nuevo Item</h2>
+                <form id="addItemForm">
+                    <label for="name">Nombre:</label>
+                    <input type="text" id="name" name="name" required>
+                    
+                    <label for="quantity">Cantidad:</label>
+                    <input type="number" id="quantity" name="quantity" required>
+                    
+                    <label for="price">Precio:</label>
+                    <input type="number" id="price" name="price" required>
+                    
+                    <button type="submit">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
