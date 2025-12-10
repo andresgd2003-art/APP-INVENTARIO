@@ -337,8 +337,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mode === 'add') {
             modalTitle.textContent = 'Nuevo Producto';
             actionInput.value = 'add';
-            document.getElementById('columna').value = '';
             addItemForm.reset();
+
+            // Calculate next column number
+            const maxCol = inventoryData.reduce((max, item) => {
+                const col = parseInt(item['#columna'] || item['row_number'] || 0);
+                return col > max ? col : max;
+            }, 0);
+            document.getElementById('columna').value = maxCol + 1;
+
         } else if (mode === 'edit' && item) {
             modalTitle.textContent = 'Editar Producto';
             actionInput.value = 'update';
