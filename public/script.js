@@ -128,7 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (Array.isArray(data)) {
-                inventoryData = data;
+                inventoryData = data.map(item => ({
+                    ...item,
+                    '#columna': item['#columna'] || item['row_number']
+                }));
                 renderTable(inventoryData);
                 updateStats(inventoryData);
             } else if (data.error) {
@@ -340,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalTitle.textContent = 'Editar Producto';
             actionInput.value = 'update';
             // Use bracket notation for #columna
-            document.getElementById('columna').value = item['#columna'] || '';
+            document.getElementById('columna').value = item['#columna'] || item['row_number'] || '';
 
             // Populate fields
             document.getElementById('SKU').value = item.SKU || '';
