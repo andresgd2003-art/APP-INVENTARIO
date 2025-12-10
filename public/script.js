@@ -419,7 +419,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData(addItemForm);
             const data = Object.fromEntries(formData.entries());
-            delete data.row_number; // n8n uses SKU
+            // row_number is now required for updates, so we keep it.
+            // delete data.row_number; 
 
             const submitBtn = addItemForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
