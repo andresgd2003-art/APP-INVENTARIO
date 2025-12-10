@@ -601,8 +601,7 @@ tr:hover {
     .main-content {
         padding: 1rem;
         padding-top: 4rem;
-        padding-bottom: 5rem;
-        /* Space for FAB */
+        padding-bottom: 2rem;
     }
 
     .top-bar {
@@ -611,38 +610,37 @@ tr:hover {
         gap: 1rem;
     }
 
-    /* Hide standard Add Button on mobile */
+    /* Actions Bar Layout */
+    .actions-bar {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "search refresh"
+            "add add";
+        gap: 1rem;
+    }
+
+    .search-box {
+        grid-area: search;
+        min-width: 0;
+        /* Prevent overflow */
+    }
+
+    #refreshBtn {
+        grid-area: refresh;
+    }
+
     #addBtn {
-        display: none;
-    }
-
-    /* Floating Action Button (FAB) */
-    .fab-btn {
         display: flex;
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        box-shadow: var(--shadow-md);
-        align-items: center;
+        /* Unhide on mobile */
+        grid-area: add;
+        width: 100%;
         justify-content: center;
-        z-index: 95;
-        cursor: pointer;
-        transition: transform 0.2s, background-color 0.2s;
     }
 
-    .fab-btn:active {
-        transform: scale(0.95);
-        background-color: var(--primary-dark);
-    }
-
-    .fab-btn .material-icons {
-        font-size: 24px;
+    /* Hide FAB as we use the main button now */
+    .fab-btn {
+        display: none;
     }
 
     /* Table View for Mobile (Scrollable) */
@@ -683,39 +681,46 @@ tr:hover {
         display: table-row;
     }
 
-    /* Larger Action Buttons for Touch */
+    /* Actions Column (First Column) */
     .actions-cell {
         display: flex;
         gap: 1rem;
         justify-content: flex-start;
+        min-width: 120px;
+        /* Ensure space for buttons */
     }
 
     .actions-cell .btn-icon {
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
         background-color: var(--background-color);
         border: 1px solid var(--border-color);
     }
 
-    .actions-cell .btn-icon .material-icons {
-        font-size: 24px;
-    }
-
-    /* Stats Grid Horizontal Scroll */
+    /* Stats Grid Vertical Stack */
     .stats-grid {
         display: flex;
-        overflow-x: auto;
-        padding-bottom: 1rem;
+        flex-direction: column;
+        /* Vertical stack */
+        overflow-x: visible;
+        /* No scroll */
         gap: 1rem;
-        margin: 0 -1rem 1.5rem -1rem;
-        /* Full width scroll */
-        padding: 0 1rem 1rem 1rem;
-        scroll-snap-type: x mandatory;
+        margin: 0 0 1.5rem 0;
+        padding: 0;
     }
 
     .stat-card {
-        min-width: 200px;
-        scroll-snap-align: start;
+        width: 100%;
+        min-width: 0;
+        flex-direction: row;
+        /* Keep icon and text side-by-side */
+        align-items: center;
+        padding: 1.5rem;
+    }
+
+    .stat-card .icon-bg {
+        margin-bottom: 0;
+        margin-right: 1rem;
     }
 
     .form-grid {
@@ -724,11 +729,6 @@ tr:hover {
 
     .span-2 {
         grid-column: span 1;
-    }
-
-    .actions-bar {
-        flex-direction: column;
-        align-items: stretch;
     }
 
     /* Increase touch targets */

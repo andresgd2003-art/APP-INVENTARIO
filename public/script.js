@@ -236,14 +236,6 @@ function renderTable(data) {
         }
 
         row.innerHTML = `
-            <td data-label="SKU"><strong>${sku}</strong></td>
-            <td data-label="Producto">${name}</td>
-            <td data-label="Categoría">${category}</td>
-            <td data-label="Proveedor">${provider}</td>
-            <td data-label="Costo">${cost}</td>
-            <td data-label="Precio">${price}</td>
-            <td data-label="Stock">${stock}</td>
-            <td data-label="Estado">${statusBadge}</td>
             <td class="actions-cell" data-label="Acciones">
                 <button class="btn-icon edit-btn" title="Editar">
                     <span class="material-icons">edit</span>
@@ -252,6 +244,14 @@ function renderTable(data) {
                     <span class="material-icons">delete</span>
                 </button>
             </td>
+            <td data-label="SKU"><strong>${sku}</strong></td>
+            <td data-label="Producto">${name}</td>
+            <td data-label="Categoría">${category}</td>
+            <td data-label="Proveedor">${provider}</td>
+            <td data-label="Costo">${cost}</td>
+            <td data-label="Precio">${price}</td>
+            <td data-label="Stock">${stock}</td>
+            <td data-label="Estado">${statusBadge}</td>
         `;
 
         // Add event listeners for buttons
