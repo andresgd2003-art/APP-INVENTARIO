@@ -32,6 +32,22 @@ body {
 .app-container {
     display: flex;
     height: 100vh;
+    position: relative;
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+    display: none;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+    background: var(--surface-color);
+    border: none;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
 }
 
 /* Sidebar */
@@ -42,6 +58,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
+    transition: transform 0.3s ease;
 }
 
 .logo {
@@ -98,6 +115,11 @@ body {
     color: var(--text-secondary);
 }
 
+/* Sections */
+.section-content.hidden {
+    display: none;
+}
+
 /* Stats Grid */
 .stats-grid {
     display: grid;
@@ -150,6 +172,29 @@ body {
     color: var(--text-primary);
 }
 
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.chart-card {
+    background: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Settings Card */
+.settings-card {
+    background: var(--surface-color);
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    max-width: 600px;
+}
+
 /* Actions Bar */
 .actions-bar {
     display: flex;
@@ -159,6 +204,7 @@ body {
     padding: 1rem;
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
+    flex-wrap: wrap;
 }
 
 .search-box {
@@ -169,6 +215,7 @@ body {
     background: var(--background-color);
     padding: 0.5rem 1rem;
     border-radius: var(--radius);
+    min-width: 200px;
 }
 
 .search-box input {
@@ -215,17 +262,24 @@ body {
     color: var(--primary-color);
 }
 
+.btn-icon.delete-btn:hover {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
 /* Table */
 .table-container {
     background: var(--surface-color);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    overflow-x: auto;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 800px;
+    /* Ensure table doesn't squish too much */
 }
 
 th {
@@ -245,6 +299,11 @@ td {
 
 tr:hover {
     background-color: #f8fafc;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
 }
 
 /* Status Badges */
@@ -288,6 +347,8 @@ tr:hover {
     background: var(--surface-color);
     width: 90%;
     max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
     border-radius: 12px;
     box-shadow: var(--shadow-md);
     animation: slideIn 0.3s ease;
@@ -341,15 +402,18 @@ tr:hover {
     color: var(--text-secondary);
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
     padding: 0.75rem;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     outline: none;
     transition: border-color 0.2s;
+    font-family: inherit;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     border-color: var(--primary-color);
 }
 
@@ -398,28 +462,32 @@ tr:hover {
 
 /* Responsive */
 @media (max-width: 768px) {
-    .app-container {
-        flex-direction: column;
-        overflow: auto;
+    .mobile-menu-btn {
+        display: block;
     }
 
     .sidebar {
-        width: 100%;
-        height: auto;
+        position: fixed;
+        left: -260px;
+        height: 100%;
+        z-index: 90;
+        box-shadow: var(--shadow-md);
+    }
+
+    .sidebar.active {
+        transform: translateX(260px);
+    }
+
+    .main-content {
         padding: 1rem;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
+        padding-top: 4rem;
+        /* Space for mobile menu btn */
     }
 
-    .nav-links {
-        display: none;
-    }
-
-    /* Hide nav links on mobile for simplicity */
-
-    .logo {
-        margin-bottom: 0;
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
     }
 
     .form-grid {
@@ -428,5 +496,16 @@ tr:hover {
 
     .span-2 {
         grid-column: span 1;
+    }
+
+    .actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-icon {
+        width: 100%;
+        /* Make icons full width on mobile actions bar? No, keep them small */
+        width: 40px;
     }
 }

@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
+    // --- DOM Elements ---
     const tableBody = document.querySelector('#inventoryTable tbody');
     const refreshBtn = document.getElementById('refreshBtn');
     const addBtn = document.getElementById('addBtn');
@@ -12,13 +12,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTitle = document.getElementById('modalTitle');
     const rowNumberInput = document.getElementById('row_number');
     const actionInput = document.getElementById('action');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const pageTitle = document.getElementById('pageTitle');
 
     // Stats Elements
     const totalProductsEl = document.getElementById('totalProducts');
     const totalValueEl = document.getElementById('totalValue');
     const lowStockEl = document.getElementById('lowStock');
 
+    // Navigation
+    const navLinks = document.querySelectorAll('.nav-links li');
+    const sections = {
+        dashboard: document.getElementById('dashboard-section'),
+        reports: document.getElementById('reports-section'),
+        settings: document.getElementById('settings-section')
+    };
+
     let inventoryData = [];
+    let categoryChart = null;
+    let topProductsChart = null;
+
+    // --- Navigation Logic ---
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetSection = link.getAttribute('data-section');
+
+            // Update Active Link
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+
+            // Show Target Section
+            Object.values(sections).forEach(sec => sec.classList.add('hidden'));
+            sections[targetSection].classList.remove('hidden');
+
+            // Update Title
+            pageTitle.textContent = link.textContent.trim();
+
+            // Mobile: Close sidebar after click
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
+            }
+
+            // Render Charts if Reports
+            if (targetSection === 'reports') {
+                renderCharts();
+            }
+        });
+    });
+
+    // Mobile Menu Toggle
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    }
 
     // --- Data Fetching & Stats ---
 
@@ -102,16 +151,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${price}</td>
                 <td>${stock}</td>
                 <td>${statusBadge}</td>
-                <td>
+                <td class="actions-cell">
                     <button class="btn-icon edit-btn" title="Editar">
                         <span class="material-icons">edit</span>
+                    </button>
+                    <button class="btn-icon delete-btn" title="Eliminar">
+                        <span class="material-icons">delete</span>
                     </button>
                 </td>
             `;
 
-            // Attach event listener to the edit button in this row
+            // Attach event listeners
             const editBtn = row.querySelector('.edit-btn');
             editBtn.addEventListener('click', () => editItem(item));
+
+            const deleteBtn = row.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', () => deleteItem(item));
 
             tableBody.appendChild(row);
         });
@@ -122,6 +177,56 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isLoading) loadingDiv.classList.remove('hidden');
             else loadingDiv.classList.add('hidden');
         }
+    }
+
+    // --- Charts ---
+    function renderCharts() {
+        if (!inventoryData.length) return;
+
+        // Prepare Data: Stock per Category
+        const categories = {};
+        inventoryData.forEach(item => {
+            const cat = item.Categoria || 'Sin Categoría';
+            const stock = parseInt(item.Stock_Actual || 0);
+            categories[cat] = (categories[cat] || 0) + stock;
+        });
+
+        // Prepare Data: Top 5 Products
+        const sortedProducts = [...inventoryData].sort((a, b) => (parseInt(b.Stock_Actual) || 0) - (parseInt(a.Stock_Actual) || 0)).slice(0, 5);
+
+        // Render Category Chart
+        const ctxCat = document.getElementById('categoryChart').getContext('2d');
+        if (categoryChart) categoryChart.destroy();
+        categoryChart = new Chart(ctxCat, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(categories),
+                datasets: [{
+                    data: Object.values(categories),
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#6366f1']
+                }]
+            }
+        });
+
+        // Render Top Products Chart
+        const ctxTop = document.getElementById('topProductsChart').getContext('2d');
+        if (topProductsChart) topProductsChart.destroy();
+        topProductsChart = new Chart(ctxTop, {
+            type: 'bar',
+            data: {
+                labels: sortedProducts.map(p => p.Nombre_Producto),
+                datasets: [{
+                    label: 'Stock',
+                    data: sortedProducts.map(p => parseInt(p.Stock_Actual)),
+                    backgroundColor: '#3b82f6'
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
     }
 
     // --- Filtering ---
@@ -140,10 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 provider.includes(searchTerm);
         });
         renderTable(filteredData);
-        // Optional: updateStats(filteredData);
     }
 
-    // --- Modal & Form Handling ---
+    // --- Modal & Actions ---
 
     function openModal(mode, item = null) {
         modal.classList.remove('hidden');
@@ -168,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('Stock_Actual').value = item.Stock_Actual || '';
             document.getElementById('Stock_Minimo').value = item.Stock_Minimo || '';
 
-            // Date formatting
             let dateVal = item.Ultima_Reposicion || '';
             if (dateVal && dateVal.length >= 10) dateVal = dateVal.substring(0, 10);
             document.getElementById('Ultima_Reposicion').value = dateVal;
@@ -181,6 +284,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function editItem(item) {
         openModal('edit', item);
+    }
+
+    async function deleteItem(item) {
+        if (!confirm(`¿Estás seguro de eliminar el producto "${item.Nombre_Producto}"?`)) return;
+
+        showLoading(true);
+        try {
+            const response = await fetch('/api/data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'delete',
+                    SKU: item.SKU
+                })
+            });
+            const result = await response.json();
+            console.log('Delete success:', result);
+            fetchData(); // Refresh
+            alert('Producto eliminado correctamente.');
+        } catch (error) {
+            console.error('Error deleting:', error);
+            alert('Error al eliminar el producto.');
+        } finally {
+            showLoading(false);
+        }
     }
 
     // Event Listeners
@@ -206,17 +334,13 @@ document.addEventListener('DOMContentLoaded', () => {
         addItemForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Basic validation
             const sku = document.getElementById('SKU').value;
             if (!sku) { alert('El SKU es obligatorio'); return; }
 
             const formData = new FormData(addItemForm);
             const data = Object.fromEntries(formData.entries());
+            delete data.row_number; // n8n uses SKU
 
-            // Remove row_number for n8n payload (it uses SKU to match)
-            delete data.row_number;
-
-            // Show some loading state on button
             const submitBtn = addItemForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Guardando...';
@@ -234,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 closeModal();
                 addItemForm.reset();
-                fetchData(); // Refresh table
+                fetchData();
                 alert('Operación realizada correctamente.');
 
             } catch (error) {

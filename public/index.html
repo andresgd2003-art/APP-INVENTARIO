@@ -7,103 +7,146 @@
     <title>Inventario App</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <span class="material-icons">menu</span>
+        </button>
+
         <!-- Sidebar / Navigation -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="logo">
                 <span class="material-icons">inventory_2</span>
                 <h2>Inventario</h2>
             </div>
             <ul class="nav-links">
-                <li class="active"><a href="#"><span class="material-icons">dashboard</span> Dashboard</a></li>
-                <li><a href="#"><span class="material-icons">analytics</span> Reportes</a></li>
-                <li><a href="#"><span class="material-icons">settings</span> Configuración</a></li>
+                <li class="active" data-section="dashboard"><a href="#"><span class="material-icons">dashboard</span>
+                        Dashboard</a></li>
+                <li data-section="reports"><a href="#"><span class="material-icons">analytics</span> Reportes</a></li>
+                <li data-section="settings"><a href="#"><span class="material-icons">settings</span> Configuración</a>
+                </li>
             </ul>
         </nav>
 
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-bar">
-                <h1>Dashboard</h1>
+                <h1 id="pageTitle">Dashboard</h1>
                 <div class="user-profile">
                     <span class="material-icons">account_circle</span>
                     <span>Admin</span>
                 </div>
             </header>
 
-            <!-- Stats Cards -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="icon-bg blue">
-                        <span class="material-icons">shopping_bag</span>
+            <!-- DASHBOARD SECTION -->
+            <div id="dashboard-section" class="section-content">
+                <!-- Stats Cards -->
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-bg blue">
+                            <span class="material-icons">shopping_bag</span>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Productos</h3>
+                            <p id="totalProducts">0</p>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3>Total Productos</h3>
-                        <p id="totalProducts">0</p>
+                    <div class="stat-card">
+                        <div class="icon-bg green">
+                            <span class="material-icons">attach_money</span>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Valor Total</h3>
+                            <p id="totalValue">$0.00</p>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-bg green">
-                        <span class="material-icons">attach_money</span>
+                    <div class="stat-card">
+                        <div class="icon-bg red">
+                            <span class="material-icons">warning</span>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Stock Bajo</h3>
+                            <p id="lowStock">0</p>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3>Valor Total</h3>
-                        <p id="totalValue">$0.00</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-bg red">
-                        <span class="material-icons">warning</span>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Stock Bajo</h3>
-                        <p id="lowStock">0</p>
-                    </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- Actions Bar -->
-            <div class="actions-bar">
-                <div class="search-box">
-                    <span class="material-icons">search</span>
-                    <input type="text" id="searchInput" placeholder="Buscar por nombre, SKU, categoría...">
+                <!-- Actions Bar -->
+                <div class="actions-bar">
+                    <div class="search-box">
+                        <span class="material-icons">search</span>
+                        <input type="text" id="searchInput" placeholder="Buscar por nombre, SKU, categoría...">
+                    </div>
+                    <button id="refreshBtn" class="btn-icon" title="Actualizar">
+                        <span class="material-icons">refresh</span>
+                    </button>
+                    <button id="addBtn" class="btn-primary">
+                        <span class="material-icons">add</span> Nuevo Item
+                    </button>
                 </div>
-                <button id="refreshBtn" class="btn-icon" title="Actualizar">
-                    <span class="material-icons">refresh</span>
-                </button>
-                <button id="addBtn" class="btn-primary">
-                    <span class="material-icons">add</span> Nuevo Item
-                </button>
+
+                <!-- Inventory Table -->
+                <div class="table-container">
+                    <table id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Proveedor</th>
+                                <th>Costo</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data populated by JS -->
+                        </tbody>
+                    </table>
+                    <div id="loading" class="loading-spinner hidden">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Inventory Table -->
-            <div class="table-container">
-                <table id="inventoryTable">
-                    <thead>
-                        <tr>
-                            <th>SKU</th>
-                            <th>Producto</th>
-                            <th>Categoría</th>
-                            <th>Proveedor</th>
-                            <th>Costo</th>
-                            <th>Precio</th>
-                            <th>Stock</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data populated by JS -->
-                    </tbody>
-                </table>
-                <div id="loading" class="loading-spinner hidden">
-                    <div class="spinner"></div>
+            <!-- REPORTS SECTION -->
+            <div id="reports-section" class="section-content hidden">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Stock por Categoría</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Top 5 Productos (Stock)</h3>
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
                 </div>
             </div>
+
+            <!-- SETTINGS SECTION -->
+            <div id="settings-section" class="section-content hidden">
+                <div class="settings-card">
+                    <h3>Configuración General</h3>
+                    <p>Versión de la App: 1.0.0</p>
+                    <div class="form-group">
+                        <label>Moneda</label>
+                        <select disabled>
+                            <option>USD ($)</option>
+                            <option selected>MXN ($)</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="alert('Configuración guardada (Simulado)')">Guardar
+                        Cambios</button>
+                </div>
+            </div>
+
         </main>
     </div>
 

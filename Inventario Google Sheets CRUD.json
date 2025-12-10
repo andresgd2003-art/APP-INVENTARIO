@@ -71,6 +71,10 @@
             {
               "value2": "update",
               "output": 1
+            },
+            {
+              "value2": "delete",
+              "output": 2
             }
           ]
         }
@@ -147,6 +151,42 @@
         128
       ],
       "id": "662bb974-3984-4a6e-8de6-c73e37bb4338",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GhVMctlPbs2NMHvL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ",
+          "mode": "list",
+          "cachedResultName": "INVENTARIO",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1319078819,
+          "mode": "list",
+          "cachedResultName": "inventario",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ/edit#gid=1319078819"
+        },
+        "columnToMatchOn": "SKU",
+        "valueToMatchOn": "={{$json.body.SKU}}",
+        "options": {}
+      },
+      "name": "Delete Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        340
+      ],
+      "id": "delete-row-node-id",
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "GhVMctlPbs2NMHvL",
@@ -264,6 +304,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Delete Row",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -279,6 +326,17 @@
       ]
     },
     "Update Row": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Row": {
       "main": [
         [
           {
