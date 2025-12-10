@@ -38,66 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingDiv.classList.add('hidden');
         }
     }
-
-    // Render table function
-    function renderTable(data) {
-        tableBody.innerHTML = '';
-        data.forEach(item => {
-            const row = document.createElement('tr');
-
-            const sku = item.SKU || item.id || '-';
-            const name = item.Nombre_Producto || item.name || '-';
-            const quantity = item.Stock_Actual || item.quantity || '-';
-            const price = item.Precio_Venta || item.price || '-';
-
-            row.innerHTML = `
-                <td>${sku}</td>
-                <td>${name}</td>
-                <td>${quantity}</td>
-                <td>${price}</td>
-                <td>
-                    <button class="edit-btn" data-row='${JSON.stringify(item)}'>Editar</button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-
-        // Add event listeners to edit buttons
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const item = JSON.parse(e.target.getAttribute('data-row'));
-                editItem(item);
-            });
-        });
-    }
-
-    // Filter data function
-    function filterData() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const filteredData = inventoryData.filter(item => {
-            const sku = (item.SKU || item.id || '').toString().toLowerCase();
-            const name = (item.Nombre_Producto || item.name || '').toString().toLowerCase();
-            return sku.includes(searchTerm) || name.includes(searchTerm);
-        });
-        renderTable(filteredData);
-    }
-
-    // Edit item function
-    function editItem(item) {
-        modalTitle.textContent = 'Editar Item';
-        actionInput.value = 'update';
-        rowNumberInput.value = item.row_number || '';
-
-        document.getElementById('SKU').value = item.SKU || '';
-        document.getElementById('Nombre_Producto').value = item.Nombre_Producto || '';
-        document.getElementById('Stock_Actual').value = item.Stock_Actual || '';
-        document.getElementById('Precio_Venta').value = item.Precio_Venta || '';
-
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-    }
-
-    // Initial load
     fetchData();
 
     // Event Listeners

@@ -65,10 +65,12 @@
         "rules": {
           "rules": [
             {
-              "value2": "add"
+              "value2": "add",
+              "output": 0
             },
             {
-              "value2": "update"
+              "value2": "update",
+              "output": 1
             }
           ]
         }
@@ -134,6 +136,7 @@
         },
         "dataMode": "autoMapInputData",
         "columnToMatchOn": "SKU",
+        "valueToMatchOn": "={{$json.body.SKU}}",
         "options": {}
       },
       "name": "Update Row",
