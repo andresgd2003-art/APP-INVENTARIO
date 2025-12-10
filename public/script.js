@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingDiv = document.getElementById('loading');
     const searchInput = document.getElementById('searchInput');
     const modalTitle = document.getElementById('modalTitle');
-    const rowNumberInput = document.getElementById('row_number');
+
     const actionInput = document.getElementById('action');
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const sidebar = document.getElementById('sidebar');
