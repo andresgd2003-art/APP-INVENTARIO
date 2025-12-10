@@ -580,35 +580,76 @@ tr:hover {
     }
 }
 
+/* Bottom Navigation (Hidden on Desktop) */
+.bottom-nav {
+    display: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .mobile-menu-btn {
-        display: block;
+        display: none;
+        /* Hide hamburger, use bottom nav */
     }
 
     .sidebar {
-        position: fixed;
-        left: -260px;
-        height: 100%;
-        z-index: 90;
-        box-shadow: var(--shadow-md);
-    }
-
-    .sidebar.active {
-        transform: translateX(260px);
+        display: none;
+        /* Hide sidebar completely */
     }
 
     .main-content {
         padding: 1rem;
-        padding-top: 4rem;
-        padding-bottom: 5rem;
-        /* Space for FAB */
+        padding-top: 1rem;
+        padding-bottom: 80px;
+        /* Space for Bottom Nav */
     }
 
     .top-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .top-bar h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: var(--surface-color);
+        border-top: 1px solid var(--border-color);
+        padding: 0.5rem 0;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 100;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+        display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        gap: 4px;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: color 0.2s;
+    }
+
+    .nav-item.active {
+        color: var(--primary-color);
+    }
+
+    .nav-item .material-icons {
+        font-size: 24px;
     }
 
     /* Hide standard Add Button on mobile */
@@ -620,12 +661,14 @@ tr:hover {
     .fab-btn {
         display: flex;
         position: fixed;
-        bottom: 2rem;
-        right: 2rem;
+        bottom: 80px;
+        /* Above bottom nav */
+        right: 1.5rem;
         width: 56px;
         height: 56px;
         border-radius: 50%;
-        background-color: var(--primary-color);
+        background-color: var(--success-color);
+        /* Green like reference */
         color: white;
         border: none;
         box-shadow: var(--shadow-md);
@@ -638,17 +681,13 @@ tr:hover {
 
     .fab-btn:active {
         transform: scale(0.95);
-        background-color: var(--primary-dark);
-    }
-
-    .fab-btn .material-icons {
-        font-size: 24px;
     }
 
     /* Card View for Table */
     .table-container {
         background: transparent;
         box-shadow: none;
+        overflow: visible;
     }
 
     table,
@@ -668,54 +707,91 @@ tr:hover {
 
     tr {
         background: var(--surface-color);
-        border-radius: var(--radius);
+        border-radius: 16px;
+        /* More rounded like reference */
         box-shadow: var(--shadow-sm);
         margin-bottom: 1rem;
         padding: 1rem;
+        position: relative;
+        border: 1px solid var(--border-color);
     }
 
     td {
         border: none;
-        position: relative;
-        padding-left: 50%;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
+        padding: 0.25rem 0;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: flex-end;
         text-align: right;
+        font-size: 0.9rem;
     }
 
+    /* SKU as Title */
+    td[data-label="Producto"] {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: block;
+        text-align: left;
+        width: 100%;
+    }
+
+    td[data-label="Producto"]:before {
+        display: none;
+    }
+
+    /* Hide labels for specific fields to look cleaner */
     td:before {
-        position: absolute;
-        top: 0.5rem;
-        left: 0;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
         content: attr(data-label);
-        font-weight: 600;
+        font-weight: 500;
         color: var(--text-secondary);
         text-align: left;
-        display: flex;
-        align-items: center;
-        height: 100%;
+        margin-right: 1rem;
     }
 
-    /* Specific adjustments for actions cell */
+    /* Stock Highlight */
+    td[data-label="Stock"] {
+        font-weight: 600;
+    }
+
+    /* Actions Cell */
     td.actions-cell {
-        justify-content: flex-end;
-        padding-left: 0;
         margin-top: 0.5rem;
+        padding-top: 0.5rem;
         border-top: 1px solid var(--border-color);
-        padding-top: 1rem;
+        justify-content: flex-end;
+        gap: 0.5rem;
     }
 
     td.actions-cell:before {
         display: none;
     }
 
-    /* Form Grid */
+    /* Stats Grid Horizontal Scroll */
+    .stats-grid {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+        gap: 1rem;
+        margin: 0 -1rem 1.5rem -1rem;
+        /* Full width scroll */
+        padding: 0 1rem 1rem 1rem;
+        scroll-snap-type: x mandatory;
+    }
+
+    .stat-card {
+        min-width: 160px;
+        scroll-snap-align: start;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+
+    .stat-card .icon-bg {
+        margin-bottom: 0.5rem;
+    }
+
     .form-grid {
         grid-template-columns: 1fr;
     }
@@ -727,19 +803,6 @@ tr:hover {
     .actions-bar {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    /* Increase touch targets */
-    .btn-primary,
-    .btn-secondary,
-    .btn-icon,
-    .nav-links a {
-        min-height: 48px;
-    }
-
-    .form-group input,
-    .form-group select {
-        min-height: 48px;
     }
 }
 

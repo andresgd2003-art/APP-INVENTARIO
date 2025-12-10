@@ -77,31 +77,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Navigation Logic ---
-    navLinks.forEach(link => {
+    const bottomNavLinks = document.querySelectorAll('.bottom-nav .nav-item');
+    const allNavLinks = [...navLinks, ...bottomNavLinks];
+
+    allNavLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const targetSection = link.getAttribute('data-section');
+            // Handle click on icon or span inside anchor
+            const targetLink = e.target.closest('a');
+            const targetSection = targetLink.getAttribute('data-section');
 
-            // Update Active Link
-            navLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
+            // Update Active Link (both sidebar and bottom nav)
+            allNavLinks.forEach(l => l.classList.remove('active'));
+
+            // Activate matching links in both menus
+            const matchingLinks = allNavLinks.filter(l => l.getAttribute('data-section') === targetSection);
+            matchingLinks.forEach(l => l.classList.add('active'));
 
             // Show Target Section
             Object.values(sections).forEach(sec => sec.classList.add('hidden'));
             sections[targetSection].classList.remove('hidden');
 
             // Update Title
-            // Get text node only, ignoring the icon span
-            const textNode = Array.from(link.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
-            if (textNode) {
-                pageTitle.textContent = textNode.textContent.trim();
-            } else {
-                // Fallback if structure changes
-                pageTitle.textContent = link.innerText.replace(/^[a-z_]+\s/i, '').trim();
+            const textSpan = targetLink.querySelector('span:last-child');
+            if (textSpan) {
+                pageTitle.textContent = textSpan.textContent.trim();
             }
 
-            // Mobile: Close sidebar after click
-            if (window.innerWidth <= 768) {
+            // Mobile: Close sidebar after click (if open)
+            if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
                 sidebar.classList.remove('active');
             }
 
