@@ -334,12 +334,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mode === 'add') {
             modalTitle.textContent = 'Nuevo Producto';
             actionInput.value = 'add';
-            rowNumberInput.value = '';
+            document.getElementById('columna').value = '';
             addItemForm.reset();
         } else if (mode === 'edit' && item) {
             modalTitle.textContent = 'Editar Producto';
             actionInput.value = 'update';
-            rowNumberInput.value = item.row_number || '';
+            // Use bracket notation for #columna
+            document.getElementById('columna').value = item['#columna'] || '';
 
             // Populate fields
             document.getElementById('SKU').value = item.SKU || '';
@@ -370,14 +371,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showLoading(true);
         try {
+            const payload = {
+                action: 'clear',
+                '#columna': item['#columna'] // Send #columna for deletion
+            };
+            console.log('Sending delete payload:', payload);
+
             const response = await fetch('/api/data', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'clear',
-                    SKU: item.SKU,
-                    row_number: item.row_number // Send row_number as requested
-                })
+                body: JSON.stringify(payload)
             });
             const result = await response.json();
             console.log('Delete success:', result);
@@ -419,8 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData(addItemForm);
             const data = Object.fromEntries(formData.entries());
-            // row_number is now required for updates, so we keep it.
-            // delete data.row_number; 
+            // #columna is included in formData because we updated the input name
 
             const submitBtn = addItemForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
