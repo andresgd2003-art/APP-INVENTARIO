@@ -196,15 +196,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             row.innerHTML = `
-                <td><strong>${sku}</strong></td>
-                <td>${name}</td>
-                <td>${category}</td>
-                <td>${provider}</td>
-                <td>${cost}</td>
-                <td>${price}</td>
-                <td>${stock}</td>
-                <td>${statusBadge}</td>
-                <td class="actions-cell">
+                <td data-label="SKU"><strong>${sku}</strong></td>
+                <td data-label="Producto">${name}</td>
+                <td data-label="Categoría">${category}</td>
+                <td data-label="Proveedor">${provider}</td>
+                <td data-label="Costo">${cost}</td>
+                <td data-label="Precio">${price}</td>
+                <td data-label="Stock">${stock}</td>
+                <td data-label="Estado">${statusBadge}</td>
+                <td class="actions-cell" data-label="Acciones">
                     <button class="btn-icon edit-btn" title="Editar">
                         <span class="material-icons">edit</span>
                     </button>
@@ -408,8 +408,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refreshBtn) refreshBtn.addEventListener('click', fetchData);
     if (searchInput) searchInput.addEventListener('input', filterData);
 
+    const fabAddBtn = document.getElementById('fabAddBtn');
+
     if (addBtn) {
         addBtn.addEventListener('click', () => openModal('add'));
+    }
+    if (fabAddBtn) {
+        fabAddBtn.addEventListener('click', () => openModal('add'));
     }
 
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
