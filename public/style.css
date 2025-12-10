@@ -13,6 +13,22 @@
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     --radius: 8px;
+    --input-bg: #ffffff;
+}
+
+/* Dark Mode Variables */
+body.dark-mode {
+    --primary-color: #90caf9;
+    --primary-dark: #42a5f5;
+    --secondary-color: #94a3b8;
+    --background-color: #0f172a;
+    --surface-color: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --border-color: #334155;
+    --input-bg: #1e293b;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
 }
 
 * {
@@ -27,6 +43,20 @@ body {
     color: var(--text-primary);
     height: 100vh;
     overflow: hidden;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Interface Size Classes */
+body.size-small {
+    font-size: 14px;
+}
+
+body.size-medium {
+    font-size: 16px;
+}
+
+body.size-large {
+    font-size: 18px;
 }
 
 .app-container {
@@ -48,6 +78,7 @@ body {
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
     cursor: pointer;
+    color: var(--text-primary);
 }
 
 /* Sidebar */
@@ -58,7 +89,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s, border-color 0.3s;
 }
 
 .logo {
@@ -90,7 +121,8 @@ body {
 
 .nav-links li.active a,
 .nav-links a:hover {
-    background-color: #eff6ff;
+    background-color: rgba(25, 118, 210, 0.1);
+    /* Transparent primary */
     color: var(--primary-color);
 }
 
@@ -136,6 +168,7 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+    transition: background-color 0.3s;
 }
 
 .icon-bg {
@@ -184,6 +217,13 @@ body {
     padding: 1.5rem;
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
+    transition: background-color 0.3s;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
 }
 
 /* Settings Card */
@@ -193,6 +233,78 @@ body {
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
     max-width: 600px;
+    transition: background-color 0.3s;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.setting-item:last-of-type {
+    border-bottom: none;
+}
+
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: var(--primary-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.version-info {
+    margin-top: 2rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-align: center;
 }
 
 /* Actions Bar */
@@ -205,6 +317,7 @@ body {
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
     flex-wrap: wrap;
+    transition: background-color 0.3s;
 }
 
 .search-box {
@@ -216,6 +329,7 @@ body {
     padding: 0.5rem 1rem;
     border-radius: var(--radius);
     min-width: 200px;
+    transition: background-color 0.3s;
 }
 
 .search-box input {
@@ -224,6 +338,7 @@ body {
     width: 100%;
     outline: none;
     font-size: 0.95rem;
+    color: var(--text-primary);
 }
 
 .btn-primary {
@@ -273,32 +388,34 @@ body {
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
     overflow-x: auto;
+    transition: background-color 0.3s;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     min-width: 800px;
-    /* Ensure table doesn't squish too much */
 }
 
 th {
-    background-color: #f8fafc;
+    background-color: var(--background-color);
     text-align: left;
     padding: 1rem;
     font-weight: 600;
     color: var(--text-secondary);
     border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 td {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-primary);
+    transition: border-color 0.3s;
 }
 
 tr:hover {
-    background-color: #f8fafc;
+    background-color: var(--background-color);
 }
 
 .actions-cell {
@@ -315,12 +432,12 @@ tr:hover {
 }
 
 .badge.low-stock {
-    background-color: #fef2f2;
+    background-color: rgba(239, 68, 68, 0.1);
     color: var(--danger-color);
 }
 
 .badge.in-stock {
-    background-color: #f0fdf4;
+    background-color: rgba(34, 197, 94, 0.1);
     color: var(--success-color);
 }
 
@@ -352,6 +469,7 @@ tr:hover {
     border-radius: 12px;
     box-shadow: var(--shadow-md);
     animation: slideIn 0.3s ease;
+    transition: background-color 0.3s;
 }
 
 @keyframes slideIn {
@@ -406,9 +524,11 @@ tr:hover {
 .form-group select {
     padding: 0.75rem;
     border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
     border-radius: 6px;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background-color 0.3s;
     font-family: inherit;
 }
 
@@ -444,7 +564,7 @@ tr:hover {
 .spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid #f3f3f3;
+    border: 4px solid var(--border-color);
     border-top: 4px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -481,7 +601,6 @@ tr:hover {
     .main-content {
         padding: 1rem;
         padding-top: 4rem;
-        /* Space for mobile menu btn */
     }
 
     .top-bar {
@@ -501,11 +620,5 @@ tr:hover {
     .actions-bar {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .btn-icon {
-        width: 100%;
-        /* Make icons full width on mobile actions bar? No, keep them small */
-        width: 40px;
     }
 }

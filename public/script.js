@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalValueEl = document.getElementById('totalValue');
     const lowStockEl = document.getElementById('lowStock');
 
+    // Settings Elements
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const interfaceSizeSelect = document.getElementById('interfaceSize');
+
     // Navigation
     const navLinks = document.querySelectorAll('.nav-links li');
     const sections = {
@@ -32,6 +36,45 @@ document.addEventListener('DOMContentLoaded', () => {
     let inventoryData = [];
     let categoryChart = null;
     let topProductsChart = null;
+
+    // --- Settings Logic ---
+
+    // Dark Mode
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (savedDarkMode) {
+        document.body.classList.add('dark-mode');
+        if (darkModeToggle) darkModeToggle.checked = true;
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', () => {
+            if (darkModeToggle.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'false');
+            }
+            // Re-render charts to update colors if needed
+            if (!sections.reports.classList.contains('hidden')) {
+                renderCharts();
+            }
+        });
+    }
+
+    // Interface Size
+    const savedSize = localStorage.getItem('interfaceSize') || 'medium';
+    document.body.classList.add(`size-${savedSize}`);
+    if (interfaceSizeSelect) interfaceSizeSelect.value = savedSize;
+
+    if (interfaceSizeSelect) {
+        interfaceSizeSelect.addEventListener('change', () => {
+            const newSize = interfaceSizeSelect.value;
+            document.body.classList.remove('size-small', 'size-medium', 'size-large');
+            document.body.classList.add(`size-${newSize}`);
+            localStorage.setItem('interfaceSize', newSize);
+        });
+    }
 
     // --- Navigation Logic ---
     navLinks.forEach(link => {
@@ -48,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sections[targetSection].classList.remove('hidden');
 
             // Update Title
+            // Use text content but ensure it's clean
             pageTitle.textContent = link.textContent.trim();
 
             // Mobile: Close sidebar after click
@@ -111,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).length;
 
         if (totalProductsEl) totalProductsEl.textContent = totalProducts;
-        if (totalValueEl) totalValueEl.textContent = `$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        if (totalValueEl) totalValueEl.textContent = `$${totalValue.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
         if (lowStockEl) lowStockEl.textContent = lowStockCount;
     }
 
@@ -183,6 +227,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCharts() {
         if (!inventoryData.length) return;
 
+        const isDark = document.body.classList.contains('dark-mode');
+        const textColor = isDark ? '#cbd5e1' : '#64748b';
+        const gridColor = isDark ? '#334155' : '#e2e8f0';
+
         // Prepare Data: Stock per Category
         const categories = {};
         inventoryData.forEach(item => {
@@ -203,8 +251,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 labels: Object.keys(categories),
                 datasets: [{
                     data: Object.values(categories),
-                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#6366f1']
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#6366f1'],
+                    borderWidth: 0
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: textColor }
+                    }
+                }
             }
         });
 
@@ -218,12 +277,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Stock',
                     data: sortedProducts.map(p => parseInt(p.Stock_Actual)),
-                    backgroundColor: '#3b82f6'
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
-                    y: { beginAtZero: true }
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: { color: textColor }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: textColor }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
                 }
             }
         });
