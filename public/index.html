@@ -133,9 +133,27 @@
                         </div>
                     </div>
                     <div class="chart-card">
-                        <h3>Top 5 Productos (Stock)</h3>
+                        <h3>Estado del Inventario</h3>
                         <div class="chart-container">
-                            <canvas id="topProductsChart"></canvas>
+                            <canvas id="stockStatusChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card full-width">
+                        <h3>⚠️ Alertas de Stock Bajo</h3>
+                        <div class="table-container" style="box-shadow: none; margin-top: 1rem;">
+                            <table id="lowStockTable">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Stock Actual</th>
+                                        <th>Mínimo</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
