@@ -369,7 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'delete',
-                    SKU: item.SKU
+                    SKU: item.SKU,
+                    row_number: item.row_number // Send row_number as requested
                 })
             });
             const result = await response.json();

@@ -160,7 +160,7 @@
     },
     {
       "parameters": {
-        "operation": "delete",
+        "operation": "clear",
         "documentId": {
           "__rl": true,
           "value": "1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ",
@@ -175,8 +175,9 @@
           "cachedResultName": "inventario",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ/edit#gid=1319078819"
         },
-        "columnToMatchOn": "SKU",
-        "valueToMatchOn": "={{$json.body.SKU}}",
+        "clear": "specificRows",
+        "startRowNumber": "={{$json.body.row_number}}",
+        "endRowNumber": "={{$json.body.row_number}}",
         "options": {}
       },
       "name": "Delete Row",
