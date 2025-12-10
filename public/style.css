@@ -613,12 +613,307 @@ tr:hover {
         grid-template-columns: 1fr;
     }
 
-    .span-2 {
-        grid-column: span 1;
+    .actions-cell {
+        display: flex;
+        gap: 0.5rem;
     }
 
-    .actions-bar {
-        flex-direction: column;
-        align-items: stretch;
+    /* Status Badges */
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 500;
     }
-}
+
+    .badge.low-stock {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+    }
+
+    .badge.in-stock {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--success-color);
+    }
+
+    /* Modal */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+    }
+
+    .modal.hidden {
+        display: none;
+    }
+
+    .modal-content {
+        background: var(--surface-color);
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+        animation: slideIn 0.3s ease;
+        transition: background-color 0.3s;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .close {
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .span-2 {
+        grid-column: span 2;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        background-color: var(--input-bg);
+        color: var(--text-primary);
+        border-radius: 6px;
+        outline: none;
+        transition: border-color 0.2s, background-color 0.3s;
+        font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: var(--primary-color);
+    }
+
+    .modal-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        padding: 0.5rem 1.25rem;
+        border-radius: var(--radius);
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+        display: flex;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .mobile-menu-btn {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -260px;
+            height: 100%;
+            z-index: 90;
+            box-shadow: var(--shadow-md);
+        }
+
+        .sidebar.active {
+            transform: translateX(260px);
+        }
+
+        .main-content {
+            padding: 1rem;
+            padding-top: 4rem;
+        }
+
+        .top-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .span-2 {
+            grid-column: span 1;
+        }
+
+        .actions-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        /* Increase touch targets */
+        .btn-primary,
+        .btn-secondary,
+        .btn-icon,
+        .nav-links a {
+            min-height: 48px;
+        }
+
+        .form-group input,
+        .form-group select {
+            min-height: 48px;
+        }
+
+        /* Mobile Table Card View */
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+            display: block;
+        }
+
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        tr {
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--surface-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        td {
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            padding-left: 50%;
+            text-align: right;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        td:before {
+            position: absolute;
+            left: 1rem;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Label headers for mobile */
+        td:nth-of-type(1):before {
+            content: "SKU";
+        }
+
+        td:nth-of-type(2):before {
+            content: "Producto";
+        }
+
+        td:nth-of-type(3):before {
+            content: "Categoría";
+        }
+
+        td:nth-of-type(4):before {
+            content: "Proveedor";
+        }
+
+        td:nth-of-type(5):before {
+            content: "Costo";
+        }
+
+        td:nth-of-type(6):before {
+            content: "Precio";
+        }
+
+        td:nth-of-type(7):before {
+            content: "Stock";
+        }
+
+        td:nth-of-type(8):before {
+            content: "Estado";
+        }
+
+        td:nth-of-type(9):before {
+            content: "Acciones";
+        }
+
+        .actions-cell {
+            justify-content: flex-end;
+        }
+    }

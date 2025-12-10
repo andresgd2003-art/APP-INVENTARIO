@@ -91,8 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
             sections[targetSection].classList.remove('hidden');
 
             // Update Title
-            // Use text content but ensure it's clean
-            pageTitle.textContent = link.textContent.trim();
+            // Get text node only, ignoring the icon span
+            const textNode = Array.from(link.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+            if (textNode) {
+                pageTitle.textContent = textNode.textContent.trim();
+            } else {
+                // Fallback if structure changes
+                pageTitle.textContent = link.innerText.replace(/^[a-z_]+\s/i, '').trim();
+            }
 
             // Mobile: Close sidebar after click
             if (window.innerWidth <= 768) {
