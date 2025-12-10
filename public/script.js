@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    action: 'delete',
+                    action: 'clear',
                     SKU: item.SKU,
                     row_number: item.row_number // Send row_number as requested
                 })
