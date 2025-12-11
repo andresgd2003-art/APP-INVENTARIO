@@ -1,56 +1,56 @@
 // ===================================
-// BARCODE SCANNER MODULE - QuaggaJS
+// BARCODE SCANNER MODULE - QuaggaJS (Optimized)
 // ===================================
 
 const BarcodeScanner = {
     isInitialized: false,
     isRunning: false,
     onDetectedCallback: null,
+    quaggaState: null, // Store internal state
 
-    // Configuración de QuaggaJS
-    config: {
-        inputStream: {
-            name: "Live",
-            type: "LiveStream",
-            target: document.querySelector('#barcode-scanner-container'),
-            constraints: {
-                width: { min: 640, ideal: 1280, max: 1920 },
-                height: { min: 480, ideal: 720, max: 1080 },
-                facingMode: "environment", // Cámara trasera en móviles
-                aspectRatio: { ideal: 16 / 9 }
-            }
-        },
-        decoder: {
-            readers: [
-                "ean_reader",      // EAN-13, EAN-8
-                "ean_8_reader",    // EAN-8
-                "code_128_reader", // CODE 128
-                "code_39_reader",  // CODE 39
-                "upc_reader",      // UPC-A, UPC-E
-                "upc_e_reader"     // UPC-E
-            ],
-            multiple: false // Solo detectar un código a la vez
-        },
-        locator: {
-            patchSize: "medium",
-            halfSample: true
-        },
-        numOfWorkers: navigator.hardwareConcurrency || 4,
-        frequency: 10, // Intentos por segundo
-        locate: true
+    // Basic Config Template
+    getConfig: function () {
+        return {
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector('#barcode-scanner-container'),
+                constraints: {
+                    width: { min: 640, ideal: 1280, max: 1920 },
+                    height: { min: 480, ideal: 720, max: 1080 },
+                    facingMode: "environment",
+                    aspectRatio: { min: 1, max: 2 },
+                    focusMode: "continuous" // Try to force continuous focus
+                }
+            },
+            decoder: {
+                readers: [
+                    "ean_reader",
+                    "ean_8_reader",
+                    "code_128_reader",
+                    "upc_reader",
+                    "upc_e_reader",
+                    "code_39_reader"
+                ],
+                multiple: false
+            },
+            locator: {
+                patchSize: "medium",
+                halfSample: true
+            },
+            numOfWorkers: navigator.hardwareConcurrency || 4,
+            frequency: 10,
+            locate: true
+        };
     },
 
-    // Inicializar scanner
     init: function (callback) {
-        if (this.isInitialized) {
-            console.log('Scanner already initialized');
-            if (callback) callback(null);
-            return;
-        }
+        // Always ensuring clean state before init
+        this.stop();
 
-        this.onDetectedCallback = callback;
+        const config = this.getConfig();
 
-        Quagga.init(this.config, (err) => {
+        Quagga.init(config, (err) => {
             if (err) {
                 console.error('Error initializing Quagga:', err);
                 if (callback) callback(err);
@@ -60,14 +60,21 @@ const BarcodeScanner = {
             this.isInitialized = true;
             console.log('Quagga initialized successfully');
 
-            // Configurar evento de detección
-            Quagga.onDetected(this.onDetected.bind(this));
+            // Re-register detection handler every init to be safe
+            this._registerHandler();
 
             if (callback) callback(null);
         });
     },
 
-    // Iniciar escaneo
+    _registerHandler: function () {
+        if (this._onDetectedHandler) {
+            Quagga.offDetected(this._onDetectedHandler);
+        }
+        this._onDetectedHandler = this.onDetected.bind(this);
+        Quagga.onDetected(this._onDetectedHandler);
+    },
+
     start: function () {
         if (!this.isInitialized) {
             console.error('Scanner not initialized. Call init() first.');
@@ -82,20 +89,52 @@ const BarcodeScanner = {
         Quagga.start();
         this.isRunning = true;
         console.log('Scanner started');
+
+        // Attempt to apply focus track constraints after start
+        this.applyFocus();
     },
 
-    // Detener escaneo
     stop: function () {
-        if (!this.isRunning) {
-            return;
+        if (this.isRunning || this.isInitialized) {
+            try {
+                Quagga.stop();
+                console.log('Scanner stopped');
+            } catch (e) {
+                console.warn('Error stopping Quagga (may not be running):', e);
+            }
         }
 
-        Quagga.stop();
+        // Clean up internal state
         this.isRunning = false;
-        console.log('Scanner stopped');
+
+        // Clear the container to remove the frozen video frame
+        const container = document.querySelector('#barcode-scanner-container');
+        if (container) {
+            container.innerHTML = '';
+        }
     },
 
-    // Callback cuando se detecta un código
+    // Try to force focus capabilities
+    applyFocus: function () {
+        try {
+            const track = Quagga.CameraAccess.getActiveTrack();
+            if (track && typeof track.getCapabilities === 'function') {
+                const capabilities = track.getCapabilities();
+
+                // Check if focusMode is supported
+                if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
+                    track.applyConstraints({
+                        advanced: [{ focusMode: 'continuous' }]
+                    }).catch(err => console.log('Focus constraint failed:', err));
+                }
+            }
+        } catch (e) {
+            console.log('Could not apply focus settings:', e);
+        }
+    },
+
+    _onDetectedHandler: null, // Internal reference for removing listener
+
     onDetected: function (result) {
         if (!result || !result.codeResult) {
             return;
@@ -104,23 +143,22 @@ const BarcodeScanner = {
         const code = result.codeResult.code;
         const format = result.codeResult.format;
 
+        // Basic validation: Ignore very short codes often due to noise
+        if (code.length < 3) return;
+
         console.log(`Barcode detected: ${code} (${format})`);
 
-        // Llamar al callback externo si existe
         if (this.onDetectedCallback) {
             this.onDetectedCallback(code, format);
         }
     },
 
-    // Limpiar recursos
     cleanup: function () {
-        if (this.isRunning) {
-            this.stop();
+        this.stop();
+        if (this._onDetectedHandler) {
+            Quagga.offDetected(this._onDetectedHandler);
+            this._onDetectedHandler = null;
         }
-
-        if (this.isInitialized) {
-            Quagga.offDetected();
-            this.isInitialized = false;
-        }
+        this.isInitialized = false;
     }
 };

@@ -79,17 +79,21 @@ function setupEventListeners() {
     const useBarcodeBtn = document.getElementById('use-barcode-btn');
 
     // Open Scanner
+    // Open Scanner
     if (scanBarcodeBtn) {
         scanBarcodeBtn.addEventListener('click', () => {
             barcodeModal.classList.remove('hidden');
             document.getElementById('barcode-result').classList.add('hidden');
             document.getElementById('use-barcode-btn').classList.add('hidden');
-            document.getElementById('barcode-code').textContent = '';
+            document.getElementById('barcode-code').textContent = 'Escaneando...';
+
+            // Ensure clean start
+            BarcodeScanner.cleanup();
 
             BarcodeScanner.init((err) => {
                 if (err) {
                     console.error("Error initializing scanner:", err);
-                    alert("No se pudo iniciar la cámara. Asegúrate de dar permisos y usar HTTPS (o localhost).");
+                    alert("No se pudo iniciar la cámara. Revisa permisos.");
                     return;
                 }
                 BarcodeScanner.start();
@@ -101,8 +105,8 @@ function setupEventListeners() {
                 document.getElementById('barcode-result').classList.remove('hidden');
                 document.getElementById('use-barcode-btn').classList.remove('hidden');
 
-                // Optional: Stop scanning automatically after detection to save resources
-                BarcodeScanner.stop();
+                // Do NOT stop immediately, let user confirm or re-scan
+                // BarcodeScanner.stop(); 
             };
         });
     }
