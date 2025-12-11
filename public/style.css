@@ -882,96 +882,105 @@ tr:hover {
         0 0 0 9999px rgba(0, 0, 0, 0.5),
         0 0 20px rgba(34, 197, 94, 0.4);
     position: relative;
-    animation: scan-pulse 2s ease-in-out infinite;
-}
 
-@keyframes scan-pulse {
-
-    0%,
-    100% {
-        border-color: rgba(34, 197, 94, 0.8);
-        box-shadow:
-            0 0 0 9999px rgba(0, 0, 0, 0.5),
-            0 0 20px rgba(34, 197, 94, 0.4);
+    .scanner-frame::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: rgba(255, 0, 0, 0.5);
+        box-shadow: 0 0 4px rgba(255, 0, 0, 0.5);
     }
 
-    50% {
-        border-color: rgba(34, 197, 94, 1);
-        box-shadow:
-            0 0 0 9999px rgba(0, 0, 0, 0.5),
-            0 0 30px rgba(34, 197, 94, 0.8);
-    }
-}
+    @keyframes scan-pulse {
 
-.scanner-instruction {
-    color: white;
-    font-size: 1rem;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
+        0%,
+        100% {
+            border-color: rgba(34, 197, 94, 0.8);
+            box-shadow:
+                0 0 0 9999px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(34, 197, 94, 0.4);
+        }
 
-/* Barcode Result */
-.barcode-result {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
-    border: 2px solid var(--success-color);
-    padding: 1.5rem;
-    border-radius: 8px;
-    text-align: center;
-    margin: 1rem 0;
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.result-label {
-    color: var(--success-color);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
-}
-
-.result-code {
-    color: var(--text-primary);
-    font-size: 1.75rem;
-    font-weight: 700;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 2px;
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .barcode-modal {
-        width: 98%;
-    }
-
-    .scanner-container {
-        min-height: 300px;
-    }
-
-    .scanner-frame {
-        width: 90%;
-        height: 120px;
+        50% {
+            border-color: rgba(34, 197, 94, 1);
+            box-shadow:
+                0 0 0 9999px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(34, 197, 94, 0.8);
+        }
     }
 
     .scanner-instruction {
-        font-size: 0.9rem;
-        padding: 0.5rem 1rem;
+        color: white;
+        font-size: 1rem;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Barcode Result */
+    .barcode-result {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+        border: 2px solid var(--success-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        margin: 1rem 0;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .result-label {
+        color: var(--success-color);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
     }
 
     .result-code {
-        font-size: 1.5rem;
+        color: var(--text-primary);
+        font-size: 1.75rem;
+        font-weight: 700;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 2px;
     }
-}
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .barcode-modal {
+            width: 98%;
+        }
+
+        .scanner-container {
+            min-height: 300px;
+        }
+
+        .scanner-frame {
+            width: 90%;
+            height: 120px;
+        }
+
+        .scanner-instruction {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .result-code {
+            font-size: 1.5rem;
+        }
+    }

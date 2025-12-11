@@ -109,7 +109,7 @@ function setupEventListeners() {
 
     // Close Scanner
     const closeBarcodeScanner = () => {
-        BarcodeScanner.stop();
+        BarcodeScanner.cleanup(); // Force full cleanup
         barcodeModal.classList.add('hidden');
     };
 
