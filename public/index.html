@@ -283,37 +283,40 @@
                 <span class="close-barcode">×</span>
             </div>
 
-            <!-- Controles de Cámara -->
-            <div class="scanner-controls">
-                <select id="cameraSelection" class="camera-select">
-                    <option value="" disabled selected>Cargando cámaras...</option>
-                </select>
-                <button id="torchBtn" class="btn-icon-small hidden" title="Linterna">
-                    <span class="material-icons">flashlight_on</span>
-                </button>
-            </div>
+            <!-- Área de Carga de Imagen -->
+            <div class="scanner-upload-area">
+                <input type="file" id="barcodeFileInput" accept="image/*" capture="environment" class="hidden">
 
-            <!-- Vista de cámara en vivo -->
-            <div class="scanner-container">
-                <div id="barcode-scanner-container"></div>
-                <div class="scanner-overlay">
-                    <div class="scanner-frame"></div>
-                    <p class="scanner-instruction">Apunta la cámara al código de barras</p>
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                    <span class="material-icons upload-icon">add_a_photo</span>
+                    <p>Toca para tomar foto o subir imagen</p>
+                    <button class="btn-primary" onclick="document.getElementById('barcodeFileInput').click()">
+                        📷 Abrir Cámara / Galería
+                    </button>
+                </div>
+
+                <div id="imagePreviewContainer" class="image-preview-container hidden">
+                    <img id="scannerPreview" src="" alt="Vista previa" class="scanner-preview-img">
+                    <div class="scan-overlay-static"></div>
+                    <p id="processingStatus" class="processing-status">Esperando imagen...</p>
                 </div>
             </div>
 
-            <!-- Resultado -->
-            <div id="barcode-result" class="barcode-result hidden">
-                <p class="result-label">✓ Código detectado:</p>
-                <p class="result-code" id="barcode-code"></p>
-            </div>
-
-            <!-- Botones de acción -->
-            <div class="modal-footer">
-                <button id="use-barcode-btn" class="btn-primary hidden">✓ Usar Código</button>
-                <button id="close-scanner-btn" class="btn-secondary">Cerrar</button>
-            </div>
         </div>
+    </div>
+
+    <!-- Resultado -->
+    <div id="barcode-result" class="barcode-result hidden">
+        <p class="result-label">✓ Código detectado:</p>
+        <p class="result-code" id="barcode-code"></p>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="modal-footer">
+        <button id="use-barcode-btn" class="btn-primary hidden">✓ Usar Código</button>
+        <button id="close-scanner-btn" class="btn-secondary">Cerrar</button>
+    </div>
+    </div>
     </div>
 
     <script src="barcode-scanner.js"></script>
