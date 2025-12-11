@@ -79,24 +79,40 @@ function setupEventListeners() {
     const useBarcodeBtn = document.getElementById('use-barcode-btn');
 
     // Open Scanner
-    // Open Scanner
     if (scanBarcodeBtn) {
-        scanBarcodeBtn.addEventListener('click', () => {
+        scanBarcodeBtn.addEventListener('click', async () => {
             barcodeModal.classList.remove('hidden');
             document.getElementById('barcode-result').classList.add('hidden');
             document.getElementById('use-barcode-btn').classList.add('hidden');
             document.getElementById('barcode-code').textContent = 'Escaneando...';
+            torchBtn.classList.add('hidden');
+            isTorchOn = false;
+            torchBtn.classList.remove('active');
 
             // Ensure clean start
             BarcodeScanner.cleanup();
 
-            BarcodeScanner.init((err) => {
+            // Start with default config first to ensure permissions
+            BarcodeScanner.init(null, async (err) => {
                 if (err) {
                     console.error("Error initializing scanner:", err);
                     alert("No se pudo iniciar la cámara. Revisa permisos.");
                     return;
                 }
                 BarcodeScanner.start();
+
+                // Check Torch Capability
+                if (BarcodeScanner.hasTorch()) {
+                    torchBtn.classList.remove('hidden');
+                } else {
+                    torchBtn.classList.add('hidden');
+                }
+
+                // Load cameras NOW that we definitely have permissions
+                await loadCameras();
+
+                // Set current value to active
+                if (cameraSelect.options.length === 1) cameraSelect.textContent = "Cámara Principal";
             });
 
             // Handle detection
@@ -104,9 +120,6 @@ function setupEventListeners() {
                 document.getElementById('barcode-code').textContent = code;
                 document.getElementById('barcode-result').classList.remove('hidden');
                 document.getElementById('use-barcode-btn').classList.remove('hidden');
-
-                // Do NOT stop immediately, let user confirm or re-scan
-                // BarcodeScanner.stop(); 
             };
         });
     }
