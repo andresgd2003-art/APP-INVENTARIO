@@ -125,6 +125,7 @@ function setupEventListeners() {
     }
 
     // Close Scanner
+    // Close Scanner
     const closeBarcodeScanner = () => {
         BarcodeScanner.cleanup(); // Force full cleanup
         barcodeModal.classList.add('hidden');
@@ -132,6 +133,10 @@ function setupEventListeners() {
 
     if (closeBarcodeModalBtn) closeBarcodeModalBtn.addEventListener('click', closeBarcodeScanner);
     if (closeScannerBtn) closeScannerBtn.addEventListener('click', closeBarcodeScanner);
+
+    // Header close button (The "X")
+    const headerCloseBtn = document.querySelector('.close-barcode');
+    if (headerCloseBtn) headerCloseBtn.addEventListener('click', closeBarcodeScanner);
 
     // Use Detected Code
     if (useBarcodeBtn) {
