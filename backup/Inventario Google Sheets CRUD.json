@@ -1,0 +1,388 @@
+{
+  "name": "Inventario Google Sheets CRUD",
+  "nodes": [
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.body ? 'POST' : 'GET'}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "GET",
+              "output": 0
+            },
+            {
+              "value2": "POST",
+              "output": 1
+            }
+          ]
+        }
+      },
+      "name": "Switch Method",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        832,
+        -176
+      ],
+      "id": "20b94863-5a06-4d51-b9b4-d74776dd744d"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "INVENTARIO",
+          "mode": "list",
+          "cachedResultName": "INVENTARIO"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "inventario",
+          "mode": "list",
+          "cachedResultName": "inventario"
+        },
+        "options": {}
+      },
+      "name": "Get Rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        1040,
+        -384
+      ],
+      "id": "68778eb9-c223-485e-a02c-fcbcc57c36a3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GhVMctlPbs2NMHvL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.body.action}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "add",
+              "output": 0
+            },
+            {
+              "value2": "update",
+              "output": 1
+            },
+            {
+              "value2": "clear",
+              "output": 2
+            }
+          ]
+        }
+      },
+      "name": "Switch Action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        32
+      ],
+      "id": "5ed17725-d72d-41c8-a072-27b9f94a0d13"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "INVENTARIO",
+          "mode": "list",
+          "cachedResultName": "INVENTARIO"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "inventario",
+          "mode": "list",
+          "cachedResultName": "inventario"
+        },
+        "dataMode": "autoMapInputData",
+        "options": {}
+      },
+      "name": "Add Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        -80
+      ],
+      "id": "62de643a-2914-4257-90c8-cedc5103643f",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GhVMctlPbs2NMHvL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ",
+          "mode": "list",
+          "cachedResultName": "INVENTARIO",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1319078819,
+          "mode": "list",
+          "cachedResultName": "inventario",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ/edit#gid=1319078819"
+        },
+        "dataMode": "autoMapInputData",
+        "columnToMatchOn": "SKU",
+        "valueToMatchOn": "={{$json.body.SKU}}",
+        "options": {}
+      },
+      "name": "Update Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        128
+      ],
+      "id": "662bb974-3984-4a6e-8de6-c73e37bb4338",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GhVMctlPbs2NMHvL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ",
+          "mode": "list",
+          "cachedResultName": "INVENTARIO",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1319078819,
+          "mode": "list",
+          "cachedResultName": "inventario",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzhApRItvLbZfo8DEDYcAnzmgCdStnqtAmRXY1vKZxQ/edit#gid=1319078819"
+        },
+        "clear": "specificRows",
+        "startRowNumber": "={{$json.body.row_number}}",
+        "endRowNumber": "={{$json.body.row_number}}",
+        "options": {}
+      },
+      "name": "Delete Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        340
+      ],
+      "id": "delete-row-node-id",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GhVMctlPbs2NMHvL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "name": "Respond Data",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        -384
+      ],
+      "id": "defac9bf-6cbf-4ce4-beb9-38d3d36f4e0b"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Operation completed\"\n}",
+        "options": {}
+      },
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        32
+      ],
+      "id": "71502425-af2f-4516-ad37-c6728974d81d"
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook GET",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -250
+      ],
+      "webhookId": "23e13c77-6a37-49b4-b8c8-6e834576d331",
+      "id": "2f2158ea-2a6d-483d-bdee-527ab185b12c"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook POST",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -50
+      ],
+      "webhookId": "23e13c77-6a37-49b4-b8c8-6e834576d331-POST",
+      "id": "2f2158ea-2a6d-483d-bdee-527ab185b12c-POST"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Switch Method": {
+      "main": [
+        [
+          {
+            "node": "Get Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Rows": {
+      "main": [
+        [
+          {
+            "node": "Respond Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Action": {
+      "main": [
+        [
+          {
+            "node": "Add Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Row": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Row": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Row": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook GET": {
+      "main": [
+        [
+          {
+            "node": "Switch Method",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook POST": {
+      "main": [
+        [
+          {
+            "node": "Switch Method",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Mexico_City",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "dd620354-0025-4bbb-af94-7ae31817733c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3590a28887018eed2a245b7d6f66f35a1d95d3da6d1e802fb9574aabf20510f0"
+  },
+  "id": "NpECtsXYdv4KSOmr",
+  "tags": []
+}

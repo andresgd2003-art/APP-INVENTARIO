@@ -8,8 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- QuaggaJS Barcode Scanner Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -212,13 +210,7 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>SKU</label>
-                        <div class="input-with-scan">
-                            <input type="text" id="SKU" name="SKU" required>
-                            <button type="button" id="scanBarcodeBtn" class="btn-scan"
-                                title="Escanear código de barras">
-                                <span class="material-icons">qr_code_scanner</span>
-                            </button>
-                        </div>
+                        <input type="text" id="SKU" name="SKU" required>
                     </div>
                     <div class="form-group span-2">
                         <label>Nombre del Producto</label>
@@ -274,39 +266,6 @@
             </form>
         </div>
     </div>
-
-    <!-- Barcode Scanner Modal -->
-    <div id="barcodeModal" class="modal hidden">
-        <div class="modal-content barcode-modal">
-            <div class="modal-header">
-                <h2>📷 Escanear Código de Barras</h2>
-                <span class="close-barcode">×</span>
-            </div>
-
-            <!-- Vista de cámara en vivo -->
-            <div class="scanner-container">
-                <div id="barcode-scanner-container"></div>
-                <div class="scanner-overlay">
-                    <div class="scanner-frame"></div>
-                    <p class="scanner-instruction">Apunta la cámara al código de barras</p>
-                </div>
-            </div>
-
-            <!-- Resultado -->
-            <div id="barcode-result" class="barcode-result hidden">
-                <p class="result-label">✓ Código detectado:</p>
-                <p class="result-code" id="barcode-code"></p>
-            </div>
-
-            <!-- Botones de acción -->
-            <div class="modal-footer">
-                <button id="use-barcode-btn" class="btn-primary hidden">✓ Usar Código</button>
-                <button id="close-scanner-btn" class="btn-secondary">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="barcode-scanner.js"></script>
     <script src="script.js"></script>
 </body>
 

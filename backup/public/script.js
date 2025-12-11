@@ -71,64 +71,6 @@ function setupEventListeners() {
         if (e.target === modal) closeModal();
     });
 
-    // --- BARCODE SCANNER LOGIC ---
-    const scanBarcodeBtn = document.getElementById('scanBarcodeBtn');
-    const barcodeModal = document.getElementById('barcodeModal');
-    const closeBarcodeModalBtn = document.getElementById('closeBarcodeModal');
-    const closeScannerBtn = document.getElementById('close-scanner-btn');
-    const useBarcodeBtn = document.getElementById('use-barcode-btn');
-
-    // Open Scanner
-    if (scanBarcodeBtn) {
-        scanBarcodeBtn.addEventListener('click', () => {
-            barcodeModal.classList.remove('hidden');
-            document.getElementById('barcode-result').classList.add('hidden');
-            document.getElementById('use-barcode-btn').classList.add('hidden');
-            document.getElementById('barcode-code').textContent = '';
-
-            BarcodeScanner.init((err) => {
-                if (err) {
-                    console.error("Error initializing scanner:", err);
-                    alert("No se pudo iniciar la cámara. Asegúrate de dar permisos y usar HTTPS (o localhost).");
-                    return;
-                }
-                BarcodeScanner.start();
-            });
-
-            // Handle detection
-            BarcodeScanner.onDetectedCallback = (code) => {
-                document.getElementById('barcode-code').textContent = code;
-                document.getElementById('barcode-result').classList.remove('hidden');
-                document.getElementById('use-barcode-btn').classList.remove('hidden');
-
-                // Optional: Stop scanning automatically after detection to save resources
-                BarcodeScanner.stop();
-            };
-        });
-    }
-
-    // Close Scanner
-    const closeBarcodeScanner = () => {
-        BarcodeScanner.stop();
-        barcodeModal.classList.add('hidden');
-    };
-
-    if (closeBarcodeModalBtn) closeBarcodeModalBtn.addEventListener('click', closeBarcodeScanner);
-    if (closeScannerBtn) closeScannerBtn.addEventListener('click', closeBarcodeScanner);
-
-    // Use Detected Code
-    if (useBarcodeBtn) {
-        useBarcodeBtn.addEventListener('click', () => {
-            const code = document.getElementById('barcode-code').textContent;
-            if (code) {
-                document.getElementById('SKU').value = code;
-                closeBarcodeScanner();
-            }
-        });
-    }
-
-    // --- END BARCODE LOGIC ---
-
     // Form Submit
     if (addItemForm) {
         addItemForm.addEventListener('submit', async (e) => {
