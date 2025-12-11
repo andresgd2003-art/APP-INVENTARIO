@@ -283,6 +283,16 @@
                 <span class="close-barcode">×</span>
             </div>
 
+            <!-- Controles de Cámara -->
+            <div class="scanner-controls">
+                <select id="cameraSelection" class="camera-select">
+                    <option value="" disabled selected>Cargando cámaras...</option>
+                </select>
+                <button id="torchBtn" class="btn-icon-small hidden" title="Linterna">
+                    <span class="material-icons">flashlight_on</span>
+                </button>
+            </div>
+
             <!-- Vista de cámara en vivo -->
             <div class="scanner-container">
                 <div id="barcode-scanner-container"></div>

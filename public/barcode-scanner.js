@@ -1,15 +1,15 @@
 // ===================================
-// BARCODE SCANNER MODULE - QuaggaJS (Optimized)
+// BARCODE SCANNER MODULE - QuaggaJS (Advanced)
 // ===================================
 
 const BarcodeScanner = {
     isInitialized: false,
     isRunning: false,
     onDetectedCallback: null,
-    quaggaState: null, // Store internal state
+    currentDeviceId: null,
+    capabilities: {},
 
-    // Basic Config Template
-    getConfig: function () {
+    getConfig: function (deviceId) {
         return {
             inputStream: {
                 name: "Live",
@@ -18,37 +18,27 @@ const BarcodeScanner = {
                 constraints: {
                     width: { min: 640, ideal: 1280, max: 1920 },
                     height: { min: 480, ideal: 720, max: 1080 },
-                    facingMode: "environment",
                     aspectRatio: { min: 1, max: 2 },
-                    focusMode: "continuous" // Try to force continuous focus
+                    focusMode: "continuous",
+                    ...(deviceId ? { deviceId: { exact: deviceId } } : { facingMode: "environment" })
                 }
             },
             decoder: {
-                readers: [
-                    "ean_reader",
-                    "ean_8_reader",
-                    "code_128_reader",
-                    "upc_reader",
-                    "upc_e_reader",
-                    "code_39_reader"
-                ],
+                readers: ["ean_reader", "ean_8_reader", "code_128_reader", "upc_reader", "code_39_reader"],
                 multiple: false
             },
-            locator: {
-                patchSize: "medium",
-                halfSample: true
-            },
+            locator: { patchSize: "medium", halfSample: true },
             numOfWorkers: navigator.hardwareConcurrency || 4,
             frequency: 10,
             locate: true
         };
     },
 
-    init: function (callback) {
-        // Always ensuring clean state before init
+    init: function (deviceId, callback) {
         this.stop();
 
-        const config = this.getConfig();
+        // If no deviceId provided, try to use the current one if set, or auto-select
+        const config = this.getConfig(deviceId || this.currentDeviceId);
 
         Quagga.init(config, (err) => {
             if (err) {
@@ -58,99 +48,89 @@ const BarcodeScanner = {
             }
 
             this.isInitialized = true;
-            console.log('Quagga initialized successfully');
+            this.currentDeviceId = deviceId; // Update current if successful
 
-            // Re-register detection handler every init to be safe
+            // Register handlers
             this._registerHandler();
+
+            // Get constraints/capabilities of valid track
+            this._updateCapabilities();
 
             if (callback) callback(null);
         });
     },
 
-    _registerHandler: function () {
-        if (this._onDetectedHandler) {
-            Quagga.offDetected(this._onDetectedHandler);
+    listVideoInputDevices: async function () {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+            console.warn("enumerateDevices() not supported.");
+            return [];
         }
-        this._onDetectedHandler = this.onDetected.bind(this);
-        Quagga.onDetected(this._onDetectedHandler);
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.filter(device => device.kind === 'videoinput');
     },
 
     start: function () {
-        if (!this.isInitialized) {
-            console.error('Scanner not initialized. Call init() first.');
-            return;
-        }
-
-        if (this.isRunning) {
-            console.log('Scanner already running');
-            return;
-        }
+        if (!this.isInitialized) return;
+        if (this.isRunning) return;
 
         Quagga.start();
         this.isRunning = true;
-        console.log('Scanner started');
 
-        // Attempt to apply focus track constraints after start
-        this.applyFocus();
+        // Re-apply focus if possible
+        this.applyTrackConstraints({ focusMode: 'continuous' });
     },
 
     stop: function () {
         if (this.isRunning || this.isInitialized) {
-            try {
-                Quagga.stop();
-                console.log('Scanner stopped');
-            } catch (e) {
-                console.warn('Error stopping Quagga (may not be running):', e);
-            }
+            try { Quagga.stop(); } catch (e) { console.warn(e); }
         }
-
-        // Clean up internal state
         this.isRunning = false;
-
-        // Clear the container to remove the frozen video frame
         const container = document.querySelector('#barcode-scanner-container');
-        if (container) {
-            container.innerHTML = '';
-        }
+        if (container) container.innerHTML = '';
     },
 
-    // Try to force focus capabilities
-    applyFocus: function () {
+    toggleTorch: function (enable) {
+        return this.applyTrackConstraints({ torch: !!enable });
+    },
+
+    applyTrackConstraints: async function (constraints) {
+        const track = Quagga.CameraAccess.getActiveTrack();
+        if (!track) return false;
+
         try {
-            const track = Quagga.CameraAccess.getActiveTrack();
-            if (track && typeof track.getCapabilities === 'function') {
-                const capabilities = track.getCapabilities();
-
-                // Check if focusMode is supported
-                if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
-                    track.applyConstraints({
-                        advanced: [{ focusMode: 'continuous' }]
-                    }).catch(err => console.log('Focus constraint failed:', err));
-                }
-            }
-        } catch (e) {
-            console.log('Could not apply focus settings:', e);
+            await track.applyConstraints({ advanced: [constraints] });
+            return true;
+        } catch (err) {
+            console.warn('Failed to apply constraints:', constraints, err);
+            return false;
         }
     },
 
-    _onDetectedHandler: null, // Internal reference for removing listener
+    _updateCapabilities: function () {
+        const track = Quagga.CameraAccess.getActiveTrack();
+        if (track && typeof track.getCapabilities === 'function') {
+            this.capabilities = track.getCapabilities();
+            console.log('Camera capabilities:', this.capabilities);
+        } else {
+            this.capabilities = {};
+        }
+    },
+
+    hasTorch: function () {
+        return !!this.capabilities.torch;
+    },
+
+    _registerHandler: function () {
+        if (this._onDetectedHandler) Quagga.offDetected(this._onDetectedHandler);
+        this._onDetectedHandler = this.onDetected.bind(this);
+        Quagga.onDetected(this._onDetectedHandler);
+    },
 
     onDetected: function (result) {
-        if (!result || !result.codeResult) {
-            return;
-        }
-
+        if (!result || !result.codeResult) return;
         const code = result.codeResult.code;
-        const format = result.codeResult.format;
-
-        // Basic validation: Ignore very short codes often due to noise
         if (code.length < 3) return;
-
-        console.log(`Barcode detected: ${code} (${format})`);
-
-        if (this.onDetectedCallback) {
-            this.onDetectedCallback(code, format);
-        }
+        if (this.onDetectedCallback) this.onDetectedCallback(code, result.codeResult.format);
     },
 
     cleanup: function () {
@@ -160,5 +140,6 @@ const BarcodeScanner = {
             this._onDetectedHandler = null;
         }
         this.isInitialized = false;
+        this.currentDeviceId = null;
     }
 };

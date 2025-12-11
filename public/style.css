@@ -832,6 +832,42 @@ tr:hover {
     color: var(--text-primary);
 }
 
+/* Scanner Controls */
+.scanner-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.camera-select {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.btn-icon-small {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.btn-icon-small.active {
+    background-color: var(--warning-color);
+    color: white;
+    border-color: var(--warning-color);
+}
+
 /* Scanner Container */
 .scanner-container {
     position: relative;
