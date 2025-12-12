@@ -80,55 +80,106 @@ function setupEventListeners() {
 
     // Open Scanner
     if (scanBarcodeBtn) {
-        scanBarcodeBtn.addEventListener('click', async () => {
+        scanBarcodeBtn.addEventListener('click', () => {
             barcodeModal.classList.remove('hidden');
             document.getElementById('barcode-result').classList.add('hidden');
             document.getElementById('use-barcode-btn').classList.add('hidden');
-            document.getElementById('barcode-code').textContent = 'Escaneando...';
-            torchBtn.classList.add('hidden');
-            isTorchOn = false;
-            torchBtn.classList.remove('active');
 
-            // Ensure clean start
-            BarcodeScanner.cleanup();
+            // Reset UI for File Upload
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            const input = document.getElementById('barcodeFileInput');
 
-            // Start with default config first to ensure permissions
-            BarcodeScanner.init(null, async (err) => {
-                if (err) {
-                    console.error("Error initializing scanner:", err);
-                    alert("No se pudo iniciar la cámara. Revisa permisos.");
-                    return;
-                }
-                BarcodeScanner.start();
+            if (previewContainer) previewContainer.classList.add('hidden');
+            if (placeholder) placeholder.classList.remove('hidden');
+            if (input) input.value = '';
 
-                // Check Torch Capability
-                if (BarcodeScanner.hasTorch()) {
-                    torchBtn.classList.remove('hidden');
-                } else {
-                    torchBtn.classList.add('hidden');
-                }
+            const codeDisplay = document.getElementById('barcode-code');
+            if (codeDisplay) codeDisplay.textContent = '';
+        });
+    }
 
-                // Load cameras NOW that we definitely have permissions
-                await loadCameras();
+    // Handle File Input Change (The actual scan)
+    const fileInput = document.getElementById('barcodeFileInput');
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+                const file = e.target.files[0];
 
-                // Set current value to active
-                if (cameraSelect.options.length === 1) cameraSelect.textContent = "Cámara Principal";
-            });
+                // Show Preview
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const preview = document.getElementById('scannerPreview');
+                    const placeholder = document.getElementById('uploadPlaceholder');
+                    const previewContainer = document.getElementById('imagePreviewContainer');
+                    const status = document.getElementById('processingStatus');
 
-            // Handle detection
-            BarcodeScanner.onDetectedCallback = (code) => {
-                document.getElementById('barcode-code').textContent = code;
-                document.getElementById('barcode-result').classList.remove('hidden');
-                document.getElementById('use-barcode-btn').classList.remove('hidden');
-            };
+                    if (preview) preview.src = evt.target.result;
+                    if (placeholder) placeholder.classList.add('hidden');
+                    if (previewContainer) previewContainer.classList.remove('hidden');
+                    if (status) {
+                        status.textContent = "🔍 Procesando imagen...";
+                        status.style.color = "white";
+                    }
+
+                    // Process Image with Quagga
+                    if (typeof BarcodeScanner !== 'undefined' && BarcodeScanner.processImage) {
+                        BarcodeScanner.processImage(evt.target.result, (err, code) => {
+                            if (code) {
+                                if (status) {
+                                    status.textContent = "✅ ¡Código Detectado!";
+                                    status.style.color = "#4caf50";
+                                }
+
+                                // Show Result
+                                const codeDisplay = document.getElementById('barcode-code');
+                                const resultArea = document.getElementById('barcode-result');
+                                const useBtn = document.getElementById('use-barcode-btn');
+
+                                if (codeDisplay) codeDisplay.textContent = code;
+                                if (resultArea) resultArea.classList.remove('hidden');
+                                if (useBtn) useBtn.classList.remove('hidden');
+
+                                // Return result for global usage
+                                window.detectedBarcode = code;
+
+                                // Optional: Vibrate
+                                if (navigator.vibrate) navigator.vibrate(200);
+
+                            } else {
+                                if (status) {
+                                    status.textContent = "❌ No se encontró código. Intenta otra vez.";
+                                    status.style.color = "#ef5350";
+                                }
+                                alert("No logramos detectar el código. Intenta acercar más la cámara o mejorar la luz.");
+
+                                // Return to upload state after brief delay
+                                setTimeout(() => {
+                                    if (previewContainer) previewContainer.classList.add('hidden');
+                                    if (placeholder) placeholder.classList.remove('hidden');
+                                }, 2000);
+                            }
+                        });
+                    } else {
+                        console.error("BarcodeScanner module not loaded correctly");
+                        alert("Error: El módulo de escaneo no está cargado.");
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         });
     }
 
     // Close Scanner
-    // Close Scanner
     const closeBarcodeScanner = () => {
-        BarcodeScanner.cleanup(); // Force full cleanup
+        // Just hide the modal, no complex cleanup needed for file input
         barcodeModal.classList.add('hidden');
+
+        // Reset preview
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const placeholder = document.getElementById('uploadPlaceholder');
+        if (previewContainer) previewContainer.classList.add('hidden');
+        if (placeholder) placeholder.classList.remove('hidden');
     };
 
     if (closeBarcodeModalBtn) closeBarcodeModalBtn.addEventListener('click', closeBarcodeScanner);
@@ -141,10 +192,18 @@ function setupEventListeners() {
     // Use Detected Code
     if (useBarcodeBtn) {
         useBarcodeBtn.addEventListener('click', () => {
-            const code = document.getElementById('barcode-code').textContent;
+            const codeDisplay = document.getElementById('barcode-code');
+            const code = codeDisplay ? codeDisplay.textContent : null;
+
             if (code) {
                 document.getElementById('SKU').value = code;
                 closeBarcodeScanner();
+
+                // If adding product, focus name
+                if (modal && !modal.classList.contains('hidden')) {
+                    const nameInput = document.getElementById('Nombre_Producto');
+                    if (nameInput) nameInput.focus();
+                }
             }
         });
     }
