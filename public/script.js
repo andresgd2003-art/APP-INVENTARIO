@@ -72,32 +72,38 @@ function setupEventListeners() {
     });
 
     // --- BARCODE SCANNER LOGIC ---
-    const scanBarcodeBtn = document.getElementById('scanBarcodeBtn');
+    const scanBarcodeBtn = document.getElementById('scanBarcodeBtn'); // In Add Modal
+    const scanSearchBtn = document.getElementById('scanSearchBtn');   // In Search Bar
     const barcodeModal = document.getElementById('barcodeModal');
     const closeBarcodeModalBtn = document.getElementById('closeBarcodeModal');
     const closeScannerBtn = document.getElementById('close-scanner-btn');
     const useBarcodeBtn = document.getElementById('use-barcode-btn');
 
-    // Open Scanner
-    if (scanBarcodeBtn) {
-        scanBarcodeBtn.addEventListener('click', () => {
-            barcodeModal.classList.remove('hidden');
-            document.getElementById('barcode-result').classList.add('hidden');
-            document.getElementById('use-barcode-btn').classList.add('hidden');
+    let scannerMode = 'add'; // 'add' or 'search'
 
-            // Reset UI for File Upload
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            const placeholder = document.getElementById('uploadPlaceholder');
-            const input = document.getElementById('barcodeFileInput');
+    const openScanner = (mode) => {
+        scannerMode = mode;
+        barcodeModal.classList.remove('hidden');
+        document.getElementById('barcode-result').classList.add('hidden');
+        document.getElementById('use-barcode-btn').classList.add('hidden');
 
-            if (previewContainer) previewContainer.classList.add('hidden');
-            if (placeholder) placeholder.classList.remove('hidden');
-            if (input) input.value = '';
+        // Reset UI
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const placeholder = document.getElementById('uploadPlaceholder');
+        const input = document.getElementById('barcodeFileInput');
+        const codeDisplay = document.getElementById('barcode-code');
+        const status = document.getElementById('processingStatus');
 
-            const codeDisplay = document.getElementById('barcode-code');
-            if (codeDisplay) codeDisplay.textContent = '';
-        });
-    }
+        if (previewContainer) previewContainer.classList.add('hidden');
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (input) input.value = '';
+        if (codeDisplay) codeDisplay.textContent = '';
+        if (status) status.textContent = "Esperando imagen...";
+    };
+
+    // Open Scanner Buttons
+    if (scanBarcodeBtn) scanBarcodeBtn.addEventListener('click', () => openScanner('add'));
+    if (scanSearchBtn) scanSearchBtn.addEventListener('click', () => openScanner('search'));
 
     // Handle File Input Change (The actual scan)
     const fileInput = document.getElementById('barcodeFileInput');
@@ -139,14 +145,27 @@ function setupEventListeners() {
 
                                 // Auto-use after 1s
                                 setTimeout(() => {
-                                    document.getElementById('SKU').value = code;
                                     closeBarcodeScanner();
 
-                                    // If adding product, focus next field
-                                    if (modal && !modal.classList.contains('hidden')) {
-                                        const nameInput = document.getElementById('Nombre_Producto');
-                                        if (nameInput) nameInput.focus();
+                                    if (scannerMode === 'add') {
+                                        // Mode ADD: Fill SKU in modal
+                                        document.getElementById('SKU').value = code;
+                                        if (modal && !modal.classList.contains('hidden')) {
+                                            const nameInput = document.getElementById('Nombre_Producto');
+                                            if (nameInput) nameInput.focus();
+                                        }
+                                    } else {
+                                        // Mode SEARCH: Filter table
+                                        const searchInput = document.getElementById('searchInput');
+                                        if (searchInput) {
+                                            searchInput.value = code;
+                                            searchInput.dispatchEvent(new Event('input')); // Trigger search
+                                            // Optional: visual feedback
+                                            searchInput.parentElement.style.border = "2px solid var(--primary-color)";
+                                            setTimeout(() => searchInput.parentElement.style.border = "", 1000);
+                                        }
                                     }
+
                                 }, 1000);
 
                                 // Optional: Vibrate
@@ -178,7 +197,6 @@ function setupEventListeners() {
 
     // Close Scanner
     const closeBarcodeScanner = () => {
-        // Just hide the modal, no complex cleanup needed for file input
         barcodeModal.classList.add('hidden');
 
         // Reset preview
@@ -202,7 +220,15 @@ function setupEventListeners() {
             const code = codeDisplay ? codeDisplay.textContent : null;
 
             if (code) {
-                document.getElementById('SKU').value = code;
+                if (scannerMode === 'add') {
+                    document.getElementById('SKU').value = code;
+                } else {
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) {
+                        searchInput.value = code;
+                        searchInput.dispatchEvent(new Event('input'));
+                    }
+                }
                 closeBarcodeScanner();
             }
         });
