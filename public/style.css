@@ -1119,3 +1119,8 @@ tr:hover {
     transform: translateX(-50%);
     width: max-content;
 }
+
+/* Utility to force hide elements */
+.hidden {
+    display: none !important;
+}
