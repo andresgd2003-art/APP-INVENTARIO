@@ -127,21 +127,27 @@ function setupEventListeners() {
                         BarcodeScanner.processImage(evt.target.result, (err, code) => {
                             if (code) {
                                 if (status) {
-                                    status.textContent = "✅ ¡Código Detectado!";
+                                    status.textContent = `✅ Código: ${code}`;
                                     status.style.color = "#4caf50";
                                 }
 
-                                // Show Result
+                                // Show Result (backup)
                                 const codeDisplay = document.getElementById('barcode-code');
                                 const resultArea = document.getElementById('barcode-result');
-                                const useBtn = document.getElementById('use-barcode-btn');
-
                                 if (codeDisplay) codeDisplay.textContent = code;
                                 if (resultArea) resultArea.classList.remove('hidden');
-                                if (useBtn) useBtn.classList.remove('hidden');
 
-                                // Return result for global usage
-                                window.detectedBarcode = code;
+                                // Auto-use after 1s
+                                setTimeout(() => {
+                                    document.getElementById('SKU').value = code;
+                                    closeBarcodeScanner();
+
+                                    // If adding product, focus next field
+                                    if (modal && !modal.classList.contains('hidden')) {
+                                        const nameInput = document.getElementById('Nombre_Producto');
+                                        if (nameInput) nameInput.focus();
+                                    }
+                                }, 1000);
 
                                 // Optional: Vibrate
                                 if (navigator.vibrate) navigator.vibrate(200);
@@ -189,7 +195,7 @@ function setupEventListeners() {
     const headerCloseBtn = document.querySelector('.close-barcode');
     if (headerCloseBtn) headerCloseBtn.addEventListener('click', closeBarcodeScanner);
 
-    // Use Detected Code
+    // Use Detected Code (Backup button)
     if (useBarcodeBtn) {
         useBarcodeBtn.addEventListener('click', () => {
             const codeDisplay = document.getElementById('barcode-code');
@@ -198,12 +204,6 @@ function setupEventListeners() {
             if (code) {
                 document.getElementById('SKU').value = code;
                 closeBarcodeScanner();
-
-                // If adding product, focus name
-                if (modal && !modal.classList.contains('hidden')) {
-                    const nameInput = document.getElementById('Nombre_Producto');
-                    if (nameInput) nameInput.focus();
-                }
             }
         });
     }
